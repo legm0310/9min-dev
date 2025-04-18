@@ -9,18 +9,29 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "14.2.14",
+    "@next/mdx": "^15.3.0",
+    "glob": "^11.0.1",
+    "gray-matter": "^4.0.3",
+    "next": "15.3.1",
+    "next-mdx-remote": "^5.0.0",
+    "next-themes": "^0.4.6",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "rehype-pretty-code": "^0.14.1",
+    "rehype-slug": "^6.0.0",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/mdx": "^2.0.13",
     "@types/node": "^20.17.30",
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.6",
     "@typescript-eslint/eslint-plugin": "^8.30.1",
     "@typescript-eslint/parser": "^8.30.1",
     "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.14",
+    "eslint-config-next": "15.3.1",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
@@ -34,5 +45,5 @@
   "lint-staged": {
     "*.{ts,tsx,md,mdx}": "eslint --cache --fix"
   },
-  "packageManager": "pnpm@10.7.1+sha512.2d92c86b7928dc8284f53494fb4201f983da65f0fb4f0d40baafa5cf628fa31dae3e5968f12466f17df7e97310e30f343a648baea1b9b350685dafafffdf5808"
+  "packageManager": "pnpm@10.8.1+sha512.c50088ba998c67b8ca8c99df8a5e02fd2ae2e2b29aaf238feaa9e124248d3f48f9fb6db2424949ff901cffbb5e0f0cc1ad6aedb602cd29450751d11c35023677"
 }
