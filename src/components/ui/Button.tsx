@@ -5,10 +5,10 @@ type ButtonProps = {
   className?: string;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
-const Button = ({ children, className, ...props }: ButtonProps) => {
+const Button = ({ children, className = '', ...props }: ButtonProps) => {
   return (
     <button
-      className={`px-3 py-2 rounded-md text-sm text-black hover:bg-gray-200 transition-colors ${className ?? ''}`}
+      className={`px-3 py-2 rounded-md text-sm text-black hover:bg-gray-200 transition-colors ${className}`}
       {...props}
     >
       {children}
