@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss';
 import typo from '@tailwindcss/typography';
 
 const config: Config = {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -48,11 +48,12 @@ const config: Config = {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
+        stroke: 'var(--nav-stroke)',
       },
 
       backgroundImage: {
         gradient:
-          'repeating-linear-gradient(to right, #06b6d4, #a855f7, #ec4899, #f97316, #3b82f6, #06b6d4)',
+          'repeating-linear-gradient(to right, #06b6d4 0%, #c084fc 10%, #f472b6 20%, #f97316 30%, #3b82f6 40%, #06b6d4 50%, #a855f7 60%, #ec4899 70%, #f97316 80%, #3b82f6 90%, #06b6d4 100%)',
       },
     },
   },
