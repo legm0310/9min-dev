@@ -8,7 +8,7 @@ import UnlockModal from './UnlockModal';
 import { toast } from 'sonner';
 
 const Lock = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
   const router = useRouter();
 
@@ -29,13 +29,13 @@ const Lock = () => {
   const onSuccess = () => {
     setIsUnlocked(true);
     setOpen(false);
-    toast.success('Success to Unlcok');
+    toast.success('잠금 해제 성공');
     router.push('/lock');
   };
 
   const onFailure = () => {
     setOpen(false);
-    toast.warning('Unregistered Users');
+    toast.warning('접근 권한이 없습니다');
     router.push('/');
   };
 
