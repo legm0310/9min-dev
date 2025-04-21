@@ -26,20 +26,6 @@
 
   --nav-stroke: var(--white);
 }
-/* 테일윈드 darkMode: 'media' 일때 아래를 사용 (class일땐 .dark)*/
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #202125;
-  }
-} */
-
-/* body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-predendard), sans-serif;
-} */
 
 @layer utilities {
   .text-balance {
