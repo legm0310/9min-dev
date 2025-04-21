@@ -1,5 +1,3 @@
-'use client';
-
 import Logo from './Logo';
 import About from './About';
 import Portfolio from './Portfolio';

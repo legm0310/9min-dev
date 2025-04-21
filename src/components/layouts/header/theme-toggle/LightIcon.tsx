@@ -4,7 +4,7 @@ const LightIcon = ({ className, ...props }: { className?: string }) => {
   const { theme } = useTheme();
   return (
     <div
-      className={`w-8 h-8 group hover:rotate-12 hover:scale-110 duration-200 ${className ?? ''}`}
+      className={`w-8 h-8 group hover:rotate-12 hover:scale-110 duration-200 text-[color:var(--nav-stroke)] ${className ?? ''}`}
     >
       <svg
         {...props}

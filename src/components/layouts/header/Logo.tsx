@@ -1,10 +1,10 @@
-'use client';
+import Link from 'next/link';
 
 const Logo = () => {
   return (
-    <a href="/">
+    <Link href="/">
       <p className="text-2xl font-semibold">9min.Dev</p>
-    </a>
+    </Link>
   );
 };
 

@@ -1,11 +1,11 @@
-'use client';
+import Link from 'next/link';
 
 const Portfolio = () => {
   return (
     // <a href="/about">
-    <a href="/">
-      <p className="text-xl font-semibold">Portfolio</p>
-    </a>
+    <Link href="/">
+      <p className="text-lg font-semibold">Portfolio</p>
+    </Link>
   );
 };
 export default Portfolio;
