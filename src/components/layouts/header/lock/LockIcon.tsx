@@ -1,18 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-// type LockIconProps = {
-//   onToggle?: (locked: boolean) => void;
-// };
+interface LockIconProps {
+  // onToggle?: (locked: boolean) => void;
+  open: boolean;
+}
 
-const LockIcon = () => {
-  const [isLocked, setIsLocked] = useState(true);
+const LockIcon = ({ open }: LockIconProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [localOpen, setLocalOpen] = useState(open);
+
+  useEffect(() => {
+    setLocalOpen(open);
+  }, [open]);
 
   const handleClick = () => {
     const UNLOCK_TIME = 300;
     setIsAnimating(true);
     setTimeout(() => {
-      setIsLocked(!isLocked);
       setIsAnimating(false);
     }, UNLOCK_TIME);
   };
@@ -20,7 +24,7 @@ const LockIcon = () => {
   return (
     <div
       onClick={handleClick}
-      className={`w-8 h-8 cursor-pointer transition-transform duration-300 
+      className={`w-8 h-8 cursor-pointer transition-transform duration-300 text-[color:var(--nav-stroke)] 
         ${isAnimating ? 'rotate-45' : 'hover:rotate-12 hover:scale-110'}
       `}
     >
@@ -32,7 +36,7 @@ const LockIcon = () => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-full h-full text-gray-800"
+        className="w-full h-full"
       >
         <rect x="4" y="11" width="16" height="10" rx="2" ry="2" />
         <path d="M12 16v2" />
@@ -40,8 +44,9 @@ const LockIcon = () => {
         <g
           className={`transition-transform duration-300 ease-in-out
             origin-[16px_7px]
-            ${isLocked ? 'translate-x-0 translate-y-0 rotate-0' : 'translate-x-[7px]'}
-          `}
+            ${localOpen ? 'translate-x-[7px]' : 'translate-x-0 translate-y-0 rotate-0'}
+            
+            `}
         >
           <path d="M8 11V7a4 4 0 018 0v4" />
         </g>
