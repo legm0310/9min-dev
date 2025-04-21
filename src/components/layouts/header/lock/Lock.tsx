@@ -36,7 +36,6 @@ const Lock = () => {
   const onFailure = () => {
     setOpen(false);
     toast.warning('접근 권한이 없습니다');
-    router.push('/');
   };
 
   return (

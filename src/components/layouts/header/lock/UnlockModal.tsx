@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import { unlockByPhoneNumber } from '@/actions/auth';
 import Modal from '@/components/ui/Modal';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface UnlockModalProps {
   open: boolean;
@@ -20,12 +20,21 @@ const UnlockModal = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const parseNumber = phone.replace(/-/g, '');
+
+    const isValid = /^010\d{8}$/.test(parseNumber);
+    if (!isValid) {
+      toast.warning('전화번호 형식을 확인해주세요');
+      return;
+    }
+
     try {
       await unlockByPhoneNumber(parseNumber);
       setPhone('');
       onSuccess();
     } catch (err) {
+      setPhone('');
       onFailure();
     }
   };
