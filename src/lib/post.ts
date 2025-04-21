@@ -3,12 +3,21 @@ import path from 'path';
 import { sync } from 'glob';
 import matter from 'gray-matter';
 import { compileMDX } from 'next-mdx-remote/rsc';
+import MdxComponents from '@/components/mdx/MdxComponents';
 
 const CONTENTS_DIR = path.join(process.cwd(), 'src/contents');
 
+type PostMeta = {
+  title: string;
+  slug: string;
+  date: Date;
+  category: string;
+  tags: string[];
+};
+
 type Matter = {
   title: string;
-  date: string;
+  date: Date;
   category: string;
   tags: string[];
 };
@@ -32,17 +41,24 @@ const parseDetail = (postPath: string) => {
   return { data, content };
 };
 
+//모든 게시물의 경로 추출(카테고리 존재 시 해당 경로만)
+export const getPostPaths = (category: string = '**'): string[] => {
+  const file = sync(`${CONTENTS_DIR}/${category}/**/*.mdx`);
+  return file;
+};
+
 //게시물 matter만 추출
-export const getPostMeta = async (postPath: string) => {
+export const getPostMeta = async (postPath: string): Promise<PostMeta> => {
   try {
     const { slug } = parseAdditionalInfo(postPath);
     const { data } = parseDetail(postPath);
     return {
       slug,
-      meta: data as Matter,
+      ...(data as Matter),
     };
   } catch (err) {
-    return err;
+    // 에러 던질방법 찾기
+    throw new Error(`getPost: ${err}`);
   }
 };
 
@@ -54,7 +70,10 @@ export const getPost = async (slug: string, category?: string) => {
 
   // const additionalDate = parseAdditionalInfo()
   const { data, content } = parseDetail(location);
-  const compiled = await compileMDX({ source: content });
+  const compiled = await compileMDX({
+    source: content,
+    components: MdxComponents,
+  });
   return {
     slug,
     meta: data as Matter,
@@ -62,15 +81,8 @@ export const getPost = async (slug: string, category?: string) => {
   };
 };
 
-//모든 게시물의 경로 추출(카테고리 존재 시 해당 경로만)
-export const getPostPaths = (category: string = '**'): string[] => {
-  const file = sync(`${CONTENTS_DIR}/${category}/**/*.mdx`);
-  console.log(file);
-  return file;
-};
-
 //모든 게시물의 슬러그 추출(카테고리 존재 시 해당 슬러그만)
-export const getPostSlugs = (category: string): string[] => {
+export const getPostSlugs = (category?: string): string[] => {
   const filePaths = getPostPaths(category);
   return filePaths.map((filePath) => parseSlug(filePath));
 };
@@ -84,7 +96,12 @@ export const getPostListMeta = async (category?: string) => {
   const paths = getPostPaths(category);
   //해당 게시물 목록이 1개도 없을 때 에러처리
   if (!paths) return null;
-  return Promise.all(paths.map((path) => getPostMeta(path)));
+  const posts: PostMeta[] = await Promise.all(
+    paths.map((path) => getPostMeta(path)),
+  );
+  return posts
+    .filter(Boolean)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
 /**
