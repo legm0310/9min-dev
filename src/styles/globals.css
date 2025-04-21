@@ -2,23 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: var(--font-predendard), sans-serif;
   }
 }
 
-body {
+:root {
+  --white: #ffffff;
+  --black: #202125;
+
+  --background: white;
+  --foreground: #202125;
+
+  --nav-stroke: #202125;
+}
+
+.dark {
+  --background: var(--black);
+  --foreground: var(--white);
+
+  --nav-stroke: var(--white);
+}
+/* 테일윈드 darkMode: 'media' 일때 아래를 사용 (class일땐 .dark)*/
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #202125;
+  }
+} */
+
+/* body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
+  font-family: var(--font-predendard), sans-serif;
+} */
 
 @layer utilities {
   .text-balance {
