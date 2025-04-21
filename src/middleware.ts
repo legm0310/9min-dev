@@ -4,7 +4,7 @@ import { jwtVerify } from 'jose';
 
 const protectedPaths = ['/lock'];
 
-export async function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (!protectedPaths.some((path) => pathname.startsWith(path))) {
@@ -34,3 +34,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/?denied=unauthorized', req.url));
   }
 }
+
+export const config = {
+  matcher: ['/lock'],
+};
