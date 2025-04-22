@@ -2,7 +2,7 @@
 
 import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
-import { PHONE_WHITELIST } from '@/utils/whitelist';
+import { PHONE_WHITELIST } from '@/constants/constants';
 
 export const unlockByPhoneNumber = async (phoneNumber: string) => {
   const cookieStore = cookies();

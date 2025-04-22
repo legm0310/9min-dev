@@ -18,16 +18,14 @@ const QueryParamListener = ({ denied }: QueryParamListenerProps) => {
 
     setTimeout(() => {
       if (denied === 'unauthorized') {
-        toast.error('인증이 필요합니다');
+        toast.warning('인증이 필요합니다');
       } else if (denied === 'forbidden') {
         toast.warning('접근 권한이 없습니다');
       }
 
+      // 쿼리 파라미터 제거
       router.replace('/', { scroll: false });
-    }, 0); //한 프레임 뒤로 미뤄서 Toaster 마운트 타이밍 확보
-
-    // 쿼리 파라미터 제거
-    router.replace('/', { scroll: false });
+    }, 0);
   }, [denied, router]);
   return null;
 };
