@@ -3,6 +3,7 @@ import path from 'path';
 import { sync } from 'glob';
 import matter from 'gray-matter';
 import { compileMDX } from 'next-mdx-remote/rsc';
+import rehypePrettyCode from 'rehype-pretty-code';
 import MdxComponents from '@/components/mdx/MdxComponents';
 
 const CONTENTS_DIR = path.join(process.cwd(), 'src/contents');
@@ -62,6 +63,12 @@ export const getPostMeta = async (postPath: string): Promise<PostMeta> => {
   }
 };
 
+const prettyCodeOptions = {
+  theme: 'one-dark-pro',
+  keepBackground: true,
+  defaultLineOptions: { class: 'line' },
+};
+
 //게시물 추출 및 컴파일
 export const getPost = async (slug: string, category?: string) => {
   const location = category
@@ -73,6 +80,11 @@ export const getPost = async (slug: string, category?: string) => {
   const compiled = await compileMDX({
     source: content,
     components: MdxComponents,
+    options: {
+      mdxOptions: {
+        rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+      },
+    },
   });
   return {
     slug,
