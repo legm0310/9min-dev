@@ -3,13 +3,13 @@
 import { Toaster as SonnerToaster, type ToasterProps } from 'sonner';
 import { useTheme } from 'next-themes';
 
-interface CustomToasterProps extends Partial<ToasterProps> {}
+// interface CustomToasterProps extends Partial<ToasterProps> {}
 
 const Toaster = ({
   position = 'bottom-left',
   expand = true,
   ...rest
-}: CustomToasterProps) => {
+}: Partial<ToasterProps>) => {
   const { resolvedTheme } = useTheme();
 
   return (
