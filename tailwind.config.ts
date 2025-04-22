@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss';
-import typo from '@tailwindcss/typography';
+import typography from '@tailwindcss/typography';
 
 const config: Config = {
   darkMode: 'class',
@@ -51,13 +51,21 @@ const config: Config = {
         stroke: 'var(--nav-stroke)',
       },
 
+      typography: {
+        DEFAULT: {
+          css: {
+            pre: null, // Tailwind가 기본적으로 pre에 주는 스타일 제거
+          },
+        },
+      },
+
       backgroundImage: {
         gradient:
           'repeating-linear-gradient(to right, #06b6d4 0%, #c084fc 10%, #f472b6 20%, #f97316 30%, #3b82f6 40%, #06b6d4 50%, #a855f7 60%, #ec4899 70%, #f97316 80%, #3b82f6 90%, #06b6d4 100%)',
       },
     },
   },
-  plugins: [typo],
+  plugins: [typography],
 };
 
 export default config;
