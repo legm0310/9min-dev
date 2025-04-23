@@ -3,14 +3,6 @@ import { useChat } from '@ai-sdk/react';
 import ChatWindow from './ChatWindow';
 import ChatInput from './ChatInput';
 
-function unwrapMarkdownIfFenced(text: string): string {
-  const trimmed = text.trim();
-  if (/^```markdown\n[\s\S]*\n```$/.test(trimmed)) {
-    return trimmed.replace(/^```markdown\n/, '').replace(/\n```$/, '');
-  }
-  return text;
-}
-
 export default function ChatBot() {
   const MAX_MESSAGES = 20;
 
@@ -34,7 +26,7 @@ export default function ChatBot() {
   });
 
   return (
-    <div className="flex flex-col gap-2 max-w-4xl h-[70vh] w-full p-4 mx-auto">
+    <div className="w-full flex flex-col gap-2 h-[70vh] min-w-[768px] p-4 mx-auto bg-gray-50 shadow-md">
       <ChatWindow messages={messages} />
       {status == 'streaming' && (
         <div className="text-center text-xs text-gray-400 mt-2">

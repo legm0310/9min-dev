@@ -23,18 +23,19 @@ const PostDetail = async ({ params }: PostDetailProps) => {
   try {
     const post = await getPost(slug);
     return (
-      <div>
+      <>
         <Landing />
+
         <PostIntro
           title={post.meta.title}
           date={post.meta.date}
           category={post.meta.category}
           tags={post.meta.tags}
         />
-        <article className="prose dark:prose-invert">
+        <article className="prose-base">
           <PostContent content={post.content} />
         </article>
-      </div>
+      </>
     );
   } catch (err) {
     notFound();

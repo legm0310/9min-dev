@@ -1,15 +1,8 @@
 import { useEffect, useRef } from 'react';
-import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
-function unwrapMarkdownIfFenced(text: string): string {
-  const trimmed = text.trim();
-  if (/^```markdown\n[\s\S]*\n```$/.test(trimmed)) {
-    return trimmed.replace(/^```markdown\n/, '').replace(/\n```$/, '');
-  }
-  return text;
-}
+import rehypeHighlight from 'rehype-highlight';
+import rehypeHighlightCodeLines from 'rehype-highlight-code-lines';
+import 'highlight.js/styles/atom-one-dark.css';
 
 interface ChatWindowProps {
   messages: { id: string; role: string; content: string }[];
@@ -34,10 +27,12 @@ const ChatWindow = ({ messages }: ChatWindowProps) => {
           ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
           >
             <div
-              className={`prose prose-sm dark:prose-invert ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
+              className={`prose-base ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {unwrapMarkdownIfFenced(m.content)}
+              <ReactMarkdown
+                rehypePlugins={[rehypeHighlight, rehypeHighlightCodeLines]}
+              >
+                {m.content}
               </ReactMarkdown>
             </div>
           </div>

@@ -8,6 +8,10 @@
     background: var(--background);
     font-family: var(--font-predendard), sans-serif;
   }
+
+  .prose-base {
+    @apply prose dark:prose-invert w-full max-w-none;
+  }
 }
 
 :root {
@@ -26,6 +30,10 @@
 
   --nav-stroke: var(--white);
 }
+
+/* .prose {
+  @apply w-f
+} */
 
 /*코드블럭 스타일*/
 .prose pre span[data-line] {
@@ -75,7 +83,9 @@
 .prose pre > code[data-line-numbers-max-digits='4'] > span[data-line]::before {
   width: 2.25rem;
 }
-
+.prose li > p {
+  margin: 0;
+}
 /* 코드라인 하이라이팅 */
 .prose pre span[data-highlighted-line] {
   @apply border-l-2 border-y-0 border-transparent bg-opacity-10 
