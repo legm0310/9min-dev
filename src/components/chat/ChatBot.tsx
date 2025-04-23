@@ -26,7 +26,7 @@ export default function ChatBot() {
   });
 
   return (
-    <div className="w-full flex flex-col gap-2 h-[70vh] min-w-[768px] p-4 mx-auto bg-gray-50 shadow-md">
+    <div className="w-full flex flex-col gap-2 h-[70vh] p-4 mx-auto bg-gray-50 shadow-md">
       <ChatWindow messages={messages} />
       {status == 'streaming' && (
         <div className="text-center text-xs text-gray-400 mt-2">

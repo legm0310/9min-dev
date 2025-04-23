@@ -17,12 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
-        {/* <body className="flex flex-col min-h-screen "> */}
+      <body>
         <ThemeProvider>
           <Header />
-          <main className="flex-1">{children}</main>
-          {/* <main className="mt-[64px] flex flex-1 flex-col">{children}</main> */}
+          {children}
           <Footer />
           <Toaster />
         </ThemeProvider>
