@@ -26,13 +26,14 @@ const config: Config = {
       },
 
       screens: {
-        sm: { min: '320px', max: '767px' },
-        md: { min: '768px', max: '959px' },
-        lg: { min: '960px', max: '1199px' },
-        xl: { min: '120px', max: '1535px' },
-        xxl: { min: ' 1536px' },
-        tablet: { max: '1199px' },
+        sm: '640px',
+        md: '768px',
+        lg: '1024px', // ✅ 기본 lg는 1024px 이상
+        xl: '1280px',
+        '2xl': '1536px',
+        '3xl': '1800px',
         mobile: { max: '767px' },
+        tablet: { min: '768px', max: '1023px' },
       },
 
       fontFamily: {
