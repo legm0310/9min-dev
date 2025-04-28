@@ -1,20 +1,20 @@
 import { compileMDX, CompileMDXResult } from 'next-mdx-remote/rsc';
-import type { Plugin } from 'unified';
+import type { PluggableList } from 'unified';
 import remarkGfm from 'remark-gfm';
-import rehypePrettyCode, {
-  type Options as PrettyCodeOptions,
-} from 'rehype-pretty-code';
+import rehypeSlug from 'rehype-slug';
+import rehypePrettyCode from 'rehype-pretty-code';
 import MdxComponents from '@/components/mdx/MdxComponents';
 
-const prettyCodeOptions: PrettyCodeOptions = {
+const prettyCodeOptions = {
   theme: 'one-dark-pro',
   keepBackground: true,
 };
 
-export const remarkPlugins = [remarkGfm];
+export const remarkPlugins: PluggableList = [remarkGfm];
 
-export const rehypePlugins: [Plugin, PrettyCodeOptions][] = [
-  [rehypePrettyCode as Plugin, prettyCodeOptions],
+export const rehypePlugins: PluggableList = [
+  [rehypePrettyCode, prettyCodeOptions],
+  [rehypeSlug],
 ];
 
 export const complieMdx = async (
