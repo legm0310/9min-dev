@@ -9,14 +9,16 @@
     font-family: var(--font-predendard), sans-serif;
   }
 
+  /* 스크롤 시 적용되는 가상 여백, 게시물 toc 목차 클릭 시 목차가 헤더에 가려지는 것을 방지 ([&_h2] ~ ) */
   .prose-base {
-    @apply prose dark:prose-invert w-full max-w-none;
+    @apply prose dark:prose-invert w-full max-w-none [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24;
   }
 }
 
 :root {
   --white: #ffffff;
   --black: #202125;
+  --gray: #808080;
 
   --background: white;
   --foreground: #202125;
@@ -37,7 +39,7 @@
 
 /*코드블럭 스타일*/
 .prose pre span[data-line] {
-  @apply inline-block px-4 sm:px-2 py-0.5 text-xs leading-snug;
+  @apply inline-block px-4 sm:px-2 py-0.5 text-[13px] leading-snug;
 }
 
 .prose pre > code {

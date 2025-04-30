@@ -49,6 +49,7 @@ const config: Config = {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
+        'sm-gray': 'var(--gray)',
         stroke: 'var(--nav-stroke)',
       },
 
