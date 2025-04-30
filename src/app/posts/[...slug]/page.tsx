@@ -1,6 +1,5 @@
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
-import Landing from '@/components/ui/Landing';
 import { getPost, getPostSlugs } from '@/lib/post';
 import { notFound } from 'next/navigation';
 
@@ -24,8 +23,6 @@ const PostDetail = async ({ params }: PostDetailProps) => {
     const post = await getPost(slug);
     return (
       <>
-        <Landing />
-
         <PostIntro
           title={post.meta.title}
           date={post.meta.date}
@@ -38,6 +35,7 @@ const PostDetail = async ({ params }: PostDetailProps) => {
       </>
     );
   } catch (err) {
+    console.log(err);
     notFound();
   }
 };

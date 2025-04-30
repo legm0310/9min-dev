@@ -12,7 +12,7 @@ export default function PostDetailLayout({
       <PageCotainer className="max-w-3xl min-w-0 lg:min-w-[768px] mx-auto ">
         {children}
       </PageCotainer>
-      <div className="w-60 mt-16 ml-20 flex-shrink-0 hidden lg:block">
+      <div className="w-60 mt-16 ml-12 flex-shrink-0 hidden lg:block">
         <TableOfContents />
       </div>
     </div>
