@@ -1,3 +1,5 @@
+import Category from '@/components/ui/Category';
+import Tag from '@/components/ui/Tag';
 import { parseDateToString } from '@/utils/date';
 
 interface PostIntroProps {
@@ -5,22 +7,26 @@ interface PostIntroProps {
   date: Date;
   category: string;
   tags: string[];
+  readingTime: string;
 }
 
-const PostIntro = ({ title, date, category, tags }: PostIntroProps) => {
+const PostIntro = ({
+  title,
+  date,
+  category,
+  tags,
+  readingTime,
+}: PostIntroProps) => {
   return (
-    <header className="mb-8">
-      <h1 className="text-3xl font-bold">{title}</h1>
-      <div className="text-sm text-gray-500 mt-1">
-        {parseDateToString(date)}
+    <header className="mb-6">
+      <div className="mb-2 section-heading">{title}</div>
+      <Category name={category} />
+      <div className="my-2 flex justify-between">
+        <div className="sm-text">{parseDateToString(date)}</div>
+        <div className="sm-text">{readingTime}</div>
       </div>
-      <div className="mt-2 flex gap-3">
-        {category && <span className="text-blue-500">📂 {category}</span>}
-        {tags?.map((tag) => (
-          <span key={tag} className="text-xs bg-gray-200 px-2 py-1 rounded">
-            #{tag}
-          </span>
-        ))}
+      <div className="mt-4 flex gap-3">
+        {tags?.map((tag) => <Tag key={tag} name={tag} />)}
       </div>
     </header>
   );

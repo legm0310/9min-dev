@@ -8,6 +8,17 @@
     background: var(--background);
     font-family: var(--font-predendard), sans-serif;
   }
+  h1 {
+    @apply text-3xl font-bold tracking-tight leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl font-medium tracking-tight;
+  }
 
   /* 스크롤 시 적용되는 가상 여백, 게시물 toc 목차 클릭 시 목차가 헤더에 가려지는 것을 방지 ([&_h2] ~ ) */
   .prose-base {
@@ -15,27 +26,75 @@
   }
 }
 
+@layer components {
+  /* for caption, index, date ...etc */
+
+  .display-heading {
+    @apply text-5xl md:text-6xl font-bold tracking-tight leading-tight;
+  }
+  .page-heading {
+    @apply text-5xl font-bold tracking-tight leading-tight;
+  }
+  .section-heading {
+    @apply text-4xl font-bold tracking-tight leading-tight;
+  }
+
+  .sm-text {
+    @apply text-sm text-sm-gray;
+  }
+
+  .list-grid-only-col1 {
+    @apply grid grid-cols-1 gap-7;
+  }
+
+  .list-grid-2col {
+    @apply grid grid-cols-1 gap-7 md:grid-cols-2 gap-9;
+  }
+
+  .list-grid-4col {
+    @apply grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  }
+
+  .tag-pill {
+    @apply px-2 py-0.5 text-xs font-medium border rounded-lg text-muted-foreground border-muted bg-muted;
+  }
+
+  .tag-pill:hover {
+    @apply bg-muted-hover text-foreground shadow-sm;
+  }
+}
+
 :root {
   --white: #ffffff;
-  --black: #202125;
+  --black: #222125;
   --gray: #808080;
 
   --background: white;
-  --foreground: #202125;
+  --foreground: #222125;
 
-  --nav-stroke: #202125;
+  --primary: 188 93% 43%; /* #08b8d3 */
+  --primary-foreground: 180 2% 13%; /* #202121; */
+
+  --muted: 220 14% 95%; /* 밝은 회색 (배경용) → #f3f4f6 근처 */
+  --muted-foreground: 220 10% 40%; /* 어두운 회색 텍스트 → #6b7280 근처 */
+  --muted-hover: 220 10% 85%;
+
+  --nav-stroke: #222125;
 }
 
 .dark {
   --background: var(--black);
   --foreground: var(--white);
 
+  --primary: 188 93% 43%; /* #08b8d3 */
+  --primary-foreground: 180 2% 13%; /* #202121; */
+
+  --muted: 220 10% 20%; /* 어두운 회색 (배경용) → #2a2c33 */
+  --muted-foreground: 220 12% 80%; /* 밝은 회색 텍스트 → #d1d5db */
+  --muted-hover: 220 10% 25%;
+
   --nav-stroke: var(--white);
 }
-
-/* .prose {
-  @apply w-f
-} */
 
 /*코드블럭 스타일*/
 .prose pre span[data-line] {
@@ -51,14 +110,6 @@
   border-radius: 0.5rem;
   overflow-x: auto;
 }
-
-/* 스크롤바 제거 */
-/* .prose pre {
-  scrollbar-width: none;
-}
-.prose pre::-webkit-scrollbar {
-  display: none;
-} */
 
 /* 라인넘버 */
 .prose pre > code[data-line-numbers] {
