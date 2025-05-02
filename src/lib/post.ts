@@ -2,105 +2,18 @@ import fs from 'fs';
 import path from 'path';
 import { sync } from 'glob';
 import matter from 'gray-matter';
+import readTime from 'reading-time';
 import { complieMdx } from './mdx';
+import { Post, PostFrontmatter, PostSummary } from '@/types/types';
+import { PostFrontmatterSchema } from './schema';
 
 const CONTENTS_DIR = path.join(process.cwd(), 'src/contents');
-
-type PostMeta = {
-  title: string;
-  slug: string;
-  date: Date;
-  category: string;
-  tags: string[];
-};
-
-type Matter = {
-  title: string;
-  date: Date;
-  category: string;
-  tags: string[];
-};
-
-const parseSlug = (filePath: string): string => {
-  return filePath
-    .replace(`${CONTENTS_DIR}/`, '')
-    .replace(/\/content\.mdx$/, '');
-};
-
-//mdx의 부가적인 정보 파싱
-const parseAdditionalInfo = (postPath: string) => {
-  const slug = parseSlug(postPath);
-  return { slug };
-};
-
-//mdx의 frontmatter, content 파싱
-const parseDetail = (postPath: string) => {
-  const file = fs.readFileSync(postPath, 'utf-8');
-  const { data, content } = matter(file);
-  return { data, content };
-};
-
-//모든 게시물의 경로 추출(카테고리 존재 시 해당 경로만)
-export const getPostPaths = (category: string = '**'): string[] => {
-  const file = sync(`${CONTENTS_DIR}/${category}/**/*.mdx`);
-  return file;
-};
-
-//게시물 matter만 추출
-export const getPostMeta = async (postPath: string): Promise<PostMeta> => {
-  try {
-    const { slug } = parseAdditionalInfo(postPath);
-    const { data } = parseDetail(postPath);
-    return {
-      slug,
-      ...(data as Matter),
-    };
-  } catch (err) {
-    // 에러 던질방법 찾기
-    throw new Error(`getPost: ${err}`);
-  }
-};
-
-//게시물 추출 및 컴파일
-export const getPost = async (slug: string, category?: string) => {
-  const location = category
-    ? `${CONTENTS_DIR}/${category}/${slug}/content.mdx`
-    : `${CONTENTS_DIR}/${slug}/content.mdx`;
-
-  // const additionalDate = parseAdditionalInfo()
-  const { data, content } = parseDetail(location);
-  const compiled = await complieMdx(content);
-  return {
-    slug,
-    meta: data as Matter,
-    content: compiled.content,
-  };
-};
-
-//모든 게시물의 슬러그 추출(카테고리 존재 시 해당 슬러그만)
-export const getPostSlugs = (category?: string): string[] => {
-  const filePaths = getPostPaths(category);
-  return filePaths.map((filePath) => parseSlug(filePath));
-};
 
 /**
  * @TODO
  * - 모든 게시물의 메타데이터만 가져오게 리팩토링
  * - 게시물 메타데이터에 썸네일 추가
- */
-export const getPostListMeta = async (category?: string) => {
-  const paths = getPostPaths(category);
-  //해당 게시물 목록이 1개도 없을 때 에러처리
-  if (!paths) return null;
-  const posts: PostMeta[] = await Promise.all(
-    paths.map((path) => getPostMeta(path)),
-  );
-  return posts
-    .filter(Boolean)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-};
-
-/**
+ *
  * @공통
  *  - 파일 경로 가져오기
  *
@@ -111,5 +24,125 @@ export const getPostListMeta = async (category?: string) => {
  * @게시물상세
  *  - 목록을 보고 상세 페이지 클릭
  *  - 넘어온 카테고리, 슬러그를 통해 상세 게시물 검색
- *
  */
+
+//카테고리 경로인지 게시물 경로인지 확인
+export const isCategory = (segments: string[]): boolean => {
+  const slug = segments.at(-1)!;
+  const categoryPath = segments.slice(0, -1).join('/');
+  const fullPath = path.join(CONTENTS_DIR, categoryPath, slug, 'content.mdx');
+  if (fs.existsSync(fullPath)) {
+    return true;
+  } else {
+    return false;
+  }
+  // const last = segments[segments.length - 1];
+  // return !last.endsWith('.mdx');
+};
+// export const isCategory = (postPath: string): boolean => {
+//   const segments = postPath.split('/');
+//   const last = segments[segments.length - 1];
+//   return !last.endsWith('.mdx');
+// };
+
+//모든 게시물의 파일 경로 추출(카테고리 존재 시 해당 경로만)
+//ex) $HOME/project/blog/src/contents/dev/golang/golang_input/content.mdx
+export const getPostPaths = (category: string = '**'): string[] => {
+  const filePaths = sync(`${CONTENTS_DIR}/${category}/**/*.mdx`);
+  return filePaths.map((filePath) => filePath.split(path.sep).join('/'));
+};
+
+//게시물 경로 세그먼트 추출
+//ex) dev/golang/golang_input
+export const getSegments = (filePath: string): string[] => {
+  return filePath
+    .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
+    .replace(/\/content\.mdx$/, '')
+    .split('/');
+};
+
+//모든 게시글 파일 경로 -> 세그먼트로 파싱
+// export const getPostsSegments = (category: string = '**'): string[][] => {
+//   const filePaths = sync(`${CONTENTS_DIR}/${category}/**/*.mdx`);
+//   return filePaths.map((filePath) =>
+//     filePath
+//       .split(path.sep)
+//       .join('/')
+//       .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
+//       .replace(/\/content\.mdx$/, '')
+//       .split('/'),
+//   );
+// };
+
+//부가 정보 파싱
+const parsePostInfo = (postPath: string) => {
+  const segments = getSegments(postPath);
+  const slug = segments[segments.length - 1];
+  const categoryPath = segments.slice(0, -1).join('/');
+  const url = `/posts/${categoryPath}/${slug}`;
+  return { slug, url, categoryPath };
+};
+
+//frontmatter, content 파싱
+const parseContent = (postPath: string) => {
+  const file = fs.readFileSync(postPath, 'utf-8');
+  const { data, content } = matter(file);
+  const frontmatter: PostFrontmatter = PostFrontmatterSchema.parse(data);
+  const readingTime = readTime(content).text;
+  return { frontmatter, content, readingTime };
+};
+
+const loadPostSummary = (postPath: string): PostSummary => {
+  const { frontmatter, readingTime } = parseContent(postPath);
+  return {
+    ...parsePostInfo(postPath),
+    ...frontmatter,
+    readingTime,
+  };
+};
+
+export const getPostSummary = async (
+  postPath: string,
+): Promise<PostSummary> => {
+  try {
+    return { ...loadPostSummary(postPath) };
+  } catch (err) {
+    // TODO 에러 핸들링 리팩토링
+    console.log(err);
+    throw new Error(`getPostSummary: ${err}`);
+  }
+};
+
+export const getPostSummaryList = async (category?: string) => {
+  const paths = getPostPaths(category);
+  if (paths.length < 1) return [];
+  const posts: PostSummary[] = await Promise.all(
+    paths.map((path) => {
+      console.log(path);
+      return getPostSummary(path);
+    }),
+  );
+  return posts
+    .filter(Boolean)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+};
+
+//게시물 추출 및 컴파일
+export const getPost = async (
+  slugInput: string,
+  category?: string,
+): Promise<Post> => {
+  //사용할때 경로 스트링으로 넘겨주기 떄문에 카테고리 파라미터 리팩토링
+  const location = category
+    ? `${CONTENTS_DIR}/${category}/${slugInput}/content.mdx`
+    : `${CONTENTS_DIR}/${slugInput}/content.mdx`;
+
+  const { frontmatter, content, readingTime } = parseContent(location);
+  const compiled = await complieMdx(content);
+  return {
+    ...parsePostInfo(location),
+    ...frontmatter,
+    content: compiled.content,
+    readingTime,
+  };
+};

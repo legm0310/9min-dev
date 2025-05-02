@@ -1,6 +1,6 @@
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
-import { getPost, getPostSlugs } from '@/lib/post';
+import { getPost, getPostPaths, getSegments } from '@/lib/post';
 import { notFound } from 'next/navigation';
 
 interface PostDetailProps {
@@ -10,13 +10,14 @@ interface PostDetailProps {
 }
 
 export async function generateStaticParams() {
-  const slugs = getPostSlugs();
+  const slugs = getPostPaths();
   return slugs.map((slug) => {
-    const segments = slug.split('/');
-    return { slug: segments };
+    console.log(slug, '', getSegments(slug));
+    return { slug: getSegments(slug) };
   });
 }
 
+//PostRouter로 리팩터링
 const PostDetail = async ({ params }: PostDetailProps) => {
   const slug = params.slug.join('/');
   try {
@@ -24,10 +25,11 @@ const PostDetail = async ({ params }: PostDetailProps) => {
     return (
       <>
         <PostIntro
-          title={post.meta.title}
-          date={post.meta.date}
-          category={post.meta.category}
-          tags={post.meta.tags}
+          title={post.title}
+          date={post.date}
+          category={post.category}
+          tags={post.tags}
+          readingTime={post.readingTime}
         />
         <article className="prose-base">
           <PostContent content={post.content} />
