@@ -32,7 +32,7 @@ export function useIndexObserver(): { headings: Heading[]; activeId: string } {
         }
       },
       {
-        rootMargin: '-14% 0px -85% 0px', // 안정성을 위해 감지 범위 조정
+        rootMargin: '-10% 0px -85% 0px', // 안정성을 위해 감지 범위 조정
         // threshold: [0.5, 1], // 교차 비율이 적어도 50% 이상일 때만 감지
       },
     );
