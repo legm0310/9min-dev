@@ -9,7 +9,7 @@ interface PostListProps {
 }
 
 const PostList = async ({ params }: PostListProps) => {
-  const category = params.segments.join('/');
+  const category = params.segments ? params.segments.join('/') : undefined;
   const posts = await getPostSummaryList(category);
 
   return (

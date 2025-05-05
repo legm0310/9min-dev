@@ -13,7 +13,7 @@ const TableOfContents = () => {
           <li key={id} className={level == 3 ? 'ml-4' : ''}>
             <a
               href={`#${id}`}
-              className={`block transition-colors hover:text-cyan-500 ${activeId === id ? 'text-cyan-600 font-semibold' : 'text-sm-gray'}`}
+              className={`block transition-colors hover:text-cyan-500 ${activeId === id ? 'text-cyan-600 font-semibold' : 'text-sm text-caption-foreground'}`}
             >
               {text}
             </a>

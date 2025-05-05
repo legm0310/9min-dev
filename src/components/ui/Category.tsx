@@ -8,11 +8,11 @@ interface CategoryProps {
 
 const Category = ({ name, href, className = '' }: CategoryProps) => {
   return href ? (
-    <Link href={href} className="">
-      <h3 className={`text-primary my-1 ${className}`}>{name}</h3>
+    <Link href={href}>
+      <h3 className={`my-1 ${className}`}>{name}</h3>
     </Link>
   ) : (
-    <h3 className={`text-primary my-1 ${className}`}>{name}</h3>
+    <h3 className={`my-1 ${className}`}>{name}</h3>
   );
 };
 

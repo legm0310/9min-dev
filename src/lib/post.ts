@@ -6,6 +6,7 @@ import readTime from 'reading-time';
 import { complieMdx } from './mdx';
 import { Post, PostFrontmatter, PostSummary } from '@/types/types';
 import { PostFrontmatterSchema } from './schema';
+import { categoryLabelMap } from '@/constants/constants';
 
 const CONTENTS_DIR = path.join(process.cwd(), 'src/contents');
 
@@ -137,3 +138,12 @@ export const getPost = async (
 };
 
 export const tagFiltering = () => {};
+
+// export const getPaginatedPosts = async({ page, tag, category }) => {
+//   const perPage = 10
+// }
+
+export const getCategoryLabel = (key: string): string | undefined => {
+  const categoryLabel = categoryLabelMap.find((c) => c.key === key)?.label;
+  return categoryLabel ?? undefined;
+};

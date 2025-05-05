@@ -10,10 +10,11 @@ export default function PostSegmentLayout({
   children: React.ReactNode;
   params: { segments: string[] };
 }) {
-  const isCategoryPath = isCategory(params.segments);
+  const segments = Array.isArray(params.segments) ? params.segments : [];
+  const isListPage = segments.length === 0 || isCategory(segments);
   return (
     //카테고리 여부에 따른 레이아웃 렌더링
-    isCategoryPath ? (
+    isListPage ? (
       <PostListLayout>{children}</PostListLayout>
     ) : (
       <div className="flex max-w-5xl mx-auto">

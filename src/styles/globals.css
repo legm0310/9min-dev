@@ -8,16 +8,22 @@
     background: var(--background);
     font-family: var(--font-predendard), sans-serif;
   }
+
+  /* EN, KR letter spacing, EN=tracking-normal(0em) KR=tracking-tight(-0.025em) */
+  .common-letter-spacing {
+    @apply tracking-[-0.01em];
+  }
+
   h1 {
-    @apply text-3xl font-bold tracking-tight leading-tight;
+    @apply text-3xl font-bold common-letter-spacing leading-tight;
   }
 
   h2 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply text-2xl font-semibold common-letter-spacing;
   }
 
   h3 {
-    @apply text-xl font-medium tracking-tight;
+    @apply text-xl font-medium common-letter-spacing;
   }
 
   /* 스크롤 시 적용되는 가상 여백, 게시물 toc 목차 클릭 시 목차가 헤더에 가려지는 것을 방지 ([&_h2] ~ ) */
@@ -28,21 +34,17 @@
 
 @layer components {
   /* for caption, index, date ...etc */
-
   .display-heading {
-    @apply text-5xl md:text-6xl font-bold tracking-tight leading-tight;
+    @apply text-5xl md:text-6xl font-bold common-letter-spacing leading-tight;
   }
   .page-heading {
-    @apply text-4xl md:text-5xl font-bold tracking-tight leading-tight;
+    @apply text-4xl md:text-5xl font-bold common-letter-spacing leading-tight;
   }
   .page-heading-semibold {
-    @apply text-4xl md:text-5xl font-semibold tracking-tight leading-tight;
+    @apply text-4xl md:text-5xl font-semibold common-letter-spacing leading-tight;
   }
   .section-heading {
-    @apply text-4xl font-bold tracking-tight leading-tight;
-  }
-  .sm-text {
-    @apply text-sm text-sm-gray;
+    @apply text-4xl font-bold common-letter-spacing leading-tight;
   }
 
   .list-grid-only-col1 {
@@ -81,6 +83,8 @@
   --muted-foreground: 220 10% 40%; /* 어두운 회색 텍스트 → #6b7280 근처 */
   --muted-hover: 220 10% 85%;
 
+  --caption: 220 14% 95%;
+  --caption-foreground: 0 0% 50%;
   --nav-stroke: #222125;
 }
 
@@ -95,6 +99,8 @@
   --muted-foreground: 220 12% 80%; /* 밝은 회색 텍스트 → #d1d5db */
   --muted-hover: 220 10% 25%;
 
+  --caption: 220 10% 20%;
+  --caption-foreground: 0 0% 50%;
   --nav-stroke: var(--white);
 }
 

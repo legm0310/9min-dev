@@ -49,13 +49,19 @@ const config: Config = {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
-
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
           hover: 'hsl(var(--muted-hover))',
         },
-        'sm-gray': 'var(--gray)',
+        caption: {
+          DEFAULT: 'hsl(var(--caption))',
+          foreground: 'hsl(var(--caption-foreground))',
+        },
         stroke: 'var(--nav-stroke)',
       },
 
