@@ -31,19 +31,8 @@ export const isCategory = (segments: string[]): boolean => {
   const slug = segments.at(-1)!;
   const categoryPath = segments.slice(0, -1).join('/');
   const fullPath = path.join(CONTENTS_DIR, categoryPath, slug, 'content.mdx');
-  if (fs.existsSync(fullPath)) {
-    return true;
-  } else {
-    return false;
-  }
-  // const last = segments[segments.length - 1];
-  // return !last.endsWith('.mdx');
+  return !fs.existsSync(fullPath);
 };
-// export const isCategory = (postPath: string): boolean => {
-//   const segments = postPath.split('/');
-//   const last = segments[segments.length - 1];
-//   return !last.endsWith('.mdx');
-// };
 
 //모든 게시물의 파일 경로 추출(카테고리 존재 시 해당 경로만)
 //ex) $HOME/project/blog/src/contents/dev/golang/golang_input/content.mdx
@@ -146,3 +135,5 @@ export const getPost = async (
     readingTime,
   };
 };
+
+export const tagFiltering = () => {};

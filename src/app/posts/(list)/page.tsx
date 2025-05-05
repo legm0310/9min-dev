@@ -2,12 +2,19 @@ import CategoryFilter from '@/components/posts/list/CategoryFilter';
 import PostCardList from '@/components/posts/list/PostCardList';
 import { getPostSummaryList } from '@/lib/post';
 
-const PostList = async () => {
-  const posts = await getPostSummaryList();
-  //카테고리 (AllPost 시작)
+interface PostListProps {
+  params: {
+    segments: string[];
+  };
+}
+
+const PostList = async ({ params }: PostListProps) => {
+  const category = params.segments.join('/');
+  const posts = await getPostSummaryList(category);
+
   return (
     <section>
-      <CategoryFilter />
+      <CategoryFilter curCategory={category} />
       <PostCardList posts={posts} />
     </section>
   );

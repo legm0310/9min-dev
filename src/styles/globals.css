@@ -33,12 +33,14 @@
     @apply text-5xl md:text-6xl font-bold tracking-tight leading-tight;
   }
   .page-heading {
-    @apply text-5xl font-bold tracking-tight leading-tight;
+    @apply text-4xl md:text-5xl font-bold tracking-tight leading-tight;
+  }
+  .page-heading-semibold {
+    @apply text-4xl md:text-5xl font-semibold tracking-tight leading-tight;
   }
   .section-heading {
     @apply text-4xl font-bold tracking-tight leading-tight;
   }
-
   .sm-text {
     @apply text-sm text-sm-gray;
   }
@@ -48,7 +50,7 @@
   }
 
   .list-grid-2col {
-    @apply grid grid-cols-1 gap-7 md:grid-cols-2 gap-9;
+    @apply grid grid-cols-1 gap-7 md:grid-cols-2;
   }
 
   .list-grid-4col {
@@ -96,7 +98,7 @@
   --nav-stroke: var(--white);
 }
 
-/*코드블럭 스타일*/
+/* 코드블럭 스타일 */
 .prose pre span[data-line] {
   @apply inline-block px-4 sm:px-2 py-0.5 text-[13px] leading-snug;
 }
@@ -139,6 +141,7 @@
 .prose li > p {
   margin: 0;
 }
+
 /* 코드라인 하이라이팅 */
 .prose pre span[data-highlighted-line] {
   @apply border-l-2 border-y-0 border-transparent bg-opacity-10 
@@ -148,7 +151,7 @@
 
 /* 코드블럭 타이틀 */
 .prose [data-rehype-pretty-code-title] {
-  @apply px-5 py-3 font-mono text-sm font-bold text-gray-800 bg-gray-200 border border-b-0 border-gray-200 rounded-t-lg dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800;
+  @apply px-6 py-3 font-mono text-sm text-gray-100 bg-gray-700 rounded-t-lg;
 }
 
 .prose [data-rehype-pretty-code-title] + pre {
@@ -169,7 +172,7 @@
 
 /* 인라인 코드블럭 스타일 */
 .prose :not(pre) > code {
-  @apply dark:bg-gray-900 bg-gray-100 border border-gray-200 dark:border-gray-700 font-mono text-sm font-normal align-middle py-0.5 px-1 rounded;
+  @apply dark:bg-gray-900 bg-gray-100 border border-gray-200 dark:border-gray-700 font-mono font-normal align-middle py-0.5 px-1 rounded;
 }
 
 @layer utilities {

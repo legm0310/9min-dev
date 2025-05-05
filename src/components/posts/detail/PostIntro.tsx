@@ -18,7 +18,7 @@ const PostIntro = ({
   readingTime,
 }: PostIntroProps) => {
   return (
-    <header className="mb-6">
+    <header className="mb-10">
       <div className="mb-2 section-heading">{title}</div>
       <Category name={category} />
       <div className="my-2 flex justify-between">

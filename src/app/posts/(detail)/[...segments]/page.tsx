@@ -1,13 +1,8 @@
+import { notFound } from 'next/navigation';
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
-import { getPost, getPostPaths, getSegments } from '@/lib/post';
-import { notFound } from 'next/navigation';
-
-interface PostDetailProps {
-  params: {
-    slug: string[];
-  };
-}
+import { getPost, getPostPaths, getSegments, isCategory } from '@/lib/post';
+import PostList from '../../(list)/page';
 
 export async function generateStaticParams() {
   const slugs = getPostPaths();
@@ -17,9 +12,14 @@ export async function generateStaticParams() {
   });
 }
 
-//PostRouter로 리팩터링
+interface PostDetailProps {
+  params: {
+    segments: string[];
+  };
+}
+
 const PostDetail = async ({ params }: PostDetailProps) => {
-  const slug = params.slug.join('/');
+  const slug = params.segments.join('/');
   try {
     const post = await getPost(slug);
     return (
@@ -42,4 +42,19 @@ const PostDetail = async ({ params }: PostDetailProps) => {
   }
 };
 
-export default PostDetail;
+interface PostRouterProps {
+  params: {
+    segments: string[];
+  };
+}
+
+const PostRouter = async ({ params }: PostRouterProps) => {
+  const isCategoryPath = isCategory(params.segments);
+  return isCategoryPath ? (
+    <PostList params={params} />
+  ) : (
+    <PostDetail params={params} />
+  );
+};
+
+export default PostRouter;
