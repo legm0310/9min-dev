@@ -44,7 +44,10 @@
     @apply text-4xl md:text-5xl font-semibold common-letter-spacing leading-tight;
   }
   .section-heading {
-    @apply text-4xl font-bold common-letter-spacing leading-tight;
+    @apply text-3xl md:text-4xl font-bold common-letter-spacing leading-tight;
+  }
+  .section-heading-semibold {
+    @apply text-3xl md:text-4xl font-semibold common-letter-spacing leading-tight;
   }
 
   .list-grid-only-col1 {

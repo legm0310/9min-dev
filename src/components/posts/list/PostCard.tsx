@@ -18,7 +18,7 @@ const PostCard = ({ postInfo }: PostCardProps) => {
       {postInfo.thumbnail && (
         <Image src={postInfo.thumbnail} alt={postInfo.title} />
       )}
-      <Category name={label} className="text-primary hover:underline" />
+      <Category name={label} className="text-primary" />
       <h2 className="my-1">{postInfo.title}</h2>
       <div className="my-2 flex gap-1.5">
         {postInfo.tags.map((tag) => (

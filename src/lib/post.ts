@@ -4,14 +4,14 @@ import { sync } from 'glob';
 import matter from 'gray-matter';
 import readTime from 'reading-time';
 import { complieMdx } from './mdx';
+import { PostFrontmatterSchema } from './schema';
+import { categoryOverrides } from '@/constants/constants';
 import {
   CategoryInfo,
   Post,
   PostFrontmatter,
   PostSummary,
 } from '@/types/types';
-import { PostFrontmatterSchema } from './schema';
-import { categoryLabelMap, categoryOverrides } from '@/constants/constants';
 
 const CONTENTS_DIR = path.join(process.cwd(), 'src/contents');
 
@@ -47,6 +47,11 @@ export const getPostPaths = (category: string = '**'): string[] => {
   return filePaths.map((filePath) => filePath.split(path.sep).join('/'));
 };
 
+export const getCategoryPaths = () => {
+  const directoryPaths = sync(`${CONTENTS_DIR}/*`);
+  return directoryPaths.map((filePath) => filePath.split(path.sep).join('/'));
+};
+
 //게시물 경로 세그먼트 추출
 //ex) dev/golang/golang_input
 export const getSegments = (filePath: string): string[] => {
@@ -57,28 +62,22 @@ export const getSegments = (filePath: string): string[] => {
 };
 
 const getCategoryPath = (filePath: string): string => {
-  const segments = filePath
+  // const segments = filePath
+  //   .split(path.sep)
+  //   .join('/')
+  //   .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
+  //   .replace(/\/content\.mdx$/, '')
+  //   .split('/');
+  // if (segments.length > 1) {
+  //   segments.pop();
+  // }
+  // return segments.join('/');
+  return filePath
     .split(path.sep)
     .join('/')
     .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
-    .replace(/\/content\.mdx$/, '')
-    .split('/');
-  segments.pop();
-  return segments.join('/');
+    .split('/')[0];
 };
-
-//모든 게시글 파일 경로 -> 세그먼트로 파싱
-// export const getPostsSegments = (category: string = '**'): string[][] => {
-//   const filePaths = sync(`${CONTENTS_DIR}/${category}/**/*.mdx`);
-//   return filePaths.map((filePath) =>
-//     filePath
-//       .split(path.sep)
-//       .join('/')
-//       .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
-//       .replace(/\/content\.mdx$/, '')
-//       .split('/'),
-//   );
-// };
 
 //부가 정보 파싱
 const parsePostInfo = (postPath: string) => {
@@ -124,7 +123,6 @@ export const getPostSummaryList = async (category?: string) => {
   if (paths.length < 1) return [];
   const posts: PostSummary[] = await Promise.all(
     paths.map((path) => {
-      console.log(path);
       return getPostSummary(path);
     }),
   );
@@ -159,23 +157,28 @@ export const tagFiltering = () => {};
 //   const perPage = 10
 // }
 
+const getAllCategoryKeys = (): string[] => {
+  const directoryPaths = getCategoryPaths().map((directoryPath) => {
+    return directoryPath
+      .split(path.sep)
+      .join('/')
+      .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
+      .split('/')[0];
+  });
+  return Array.from(new Set(directoryPaths));
+};
+
+const capitalize = (str: string): string => {
+  return str[0].toUpperCase() + str.slice(1);
+};
+
 const fallbackCategory = (key: string): CategoryInfo => ({
   key,
-  label: key.split('/').join(' '),
+  label: key
+    .split('/')
+    .map((k) => k.split('-').map(capitalize).join(' '))
+    .join(' > '),
 });
-
-export const getAllCategoryKeys = (): string[] => {
-  const filePaths = getPostPaths();
-  const categoryPaths = filePaths.map((filePath) => {
-    return getCategoryPath(filePath);
-  });
-  return Array.from(new Set(categoryPaths));
-};
-
-export const getCategoryLabel = (key: string): string | undefined => {
-  const categoryLabel = categoryLabelMap.find((c) => c.key === key)?.label;
-  return categoryLabel ?? undefined;
-};
 
 //Map: runtime, client, filter
 //List: UI map() 렌더링
@@ -186,5 +189,9 @@ export const categoryMap = new Map<string, CategoryInfo>(
     return [key, { ...fallbackCategory(key), ...override } as CategoryInfo];
   }),
 );
-export const categoryList = Array.from(categoryMap.values());
+export const categoryList = Array.from(categoryMap.values()).sort();
 export const categoryRecord = Object.fromEntries(categoryMap.entries());
+
+export const getCategoryLabel = (key: string): string | undefined => {
+  return categoryMap.get(key)?.label;
+};
