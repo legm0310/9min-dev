@@ -14,7 +14,7 @@ const filePath = path.join(postDir, 'content.mdx');
 
 const frontmatter = `---
 title: ''
-data: ''
+date: ''
 category: '${categoryPath}'
 tags: []
 thumbnail: ''
