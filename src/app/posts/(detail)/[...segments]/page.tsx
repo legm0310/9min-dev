@@ -1,13 +1,7 @@
 import { notFound } from 'next/navigation';
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
-import {
-  getCategoryLabel,
-  getPost,
-  getPostPaths,
-  getSegments,
-  isCategory,
-} from '@/lib/post';
+import { getPost, getPostPaths, getSegments, isCategory } from '@/lib/post';
 import PostList from '../../(list)/page';
 
 export async function generateStaticParams() {
@@ -25,10 +19,9 @@ interface PostDetailProps {
 }
 
 const PostDetail = async ({ params }: PostDetailProps) => {
-  const categoryPath = params.segments[0 - 2];
+  const categoryPath = params.segments.slice(0, -2);
   const category = params.segments.at(-2)!;
   const slug = params.segments.at(-1)!;
-  const label = getCategoryLabel(category);
   const postPath = params.segments.join('/');
   try {
     const post = await getPost(postPath);
@@ -37,7 +30,7 @@ const PostDetail = async ({ params }: PostDetailProps) => {
         <PostIntro
           title={post.title}
           date={post.date}
-          category={label ?? post.category}
+          category={post.category}
           tags={post.tags}
           readingTime={post.readingTime}
         />
