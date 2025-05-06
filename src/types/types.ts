@@ -22,15 +22,14 @@ export interface PostSummary {
   thumbnail?: string;
 }
 
-export interface PostCard {
-  title: string;
-  date: Date;
-  category?: string;
-  tags: string[];
-  readingTime: string;
-  thumbnail?: string;
-}
-
 export interface Post extends PostSummary {
   content: ReactElement;
+}
+
+export interface CategoryInfo {
+  key: string;
+  label: string;
+  parent?: string;
+  icon?: string;
+  description?: string;
 }

@@ -4,9 +4,14 @@ import { sync } from 'glob';
 import matter from 'gray-matter';
 import readTime from 'reading-time';
 import { complieMdx } from './mdx';
-import { Post, PostFrontmatter, PostSummary } from '@/types/types';
+import {
+  CategoryInfo,
+  Post,
+  PostFrontmatter,
+  PostSummary,
+} from '@/types/types';
 import { PostFrontmatterSchema } from './schema';
-import { categoryLabelMap } from '@/constants/constants';
+import { categoryLabelMap, categoryOverrides } from '@/constants/constants';
 
 const CONTENTS_DIR = path.join(process.cwd(), 'src/contents');
 
@@ -49,6 +54,17 @@ export const getSegments = (filePath: string): string[] => {
     .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
     .replace(/\/content\.mdx$/, '')
     .split('/');
+};
+
+const getCategoryPath = (filePath: string): string => {
+  const segments = filePath
+    .split(path.sep)
+    .join('/')
+    .replace(`${CONTENTS_DIR.split(path.sep).join('/')}/`, '')
+    .replace(/\/content\.mdx$/, '')
+    .split('/');
+  segments.pop();
+  return segments.join('/');
 };
 
 //모든 게시글 파일 경로 -> 세그먼트로 파싱
@@ -143,7 +159,32 @@ export const tagFiltering = () => {};
 //   const perPage = 10
 // }
 
+const fallbackCategory = (key: string): CategoryInfo => ({
+  key,
+  label: key.split('/').join(' '),
+});
+
+export const getAllCategoryKeys = (): string[] => {
+  const filePaths = getPostPaths();
+  const categoryPaths = filePaths.map((filePath) => {
+    return getCategoryPath(filePath);
+  });
+  return Array.from(new Set(categoryPaths));
+};
+
 export const getCategoryLabel = (key: string): string | undefined => {
   const categoryLabel = categoryLabelMap.find((c) => c.key === key)?.label;
   return categoryLabel ?? undefined;
 };
+
+//Map: runtime, client, filter
+//List: UI map() 렌더링
+//Record: SSG 함수, required JSON
+export const categoryMap = new Map<string, CategoryInfo>(
+  getAllCategoryKeys().map((key) => {
+    const override = categoryOverrides[key] ?? {};
+    return [key, { ...fallbackCategory(key), ...override } as CategoryInfo];
+  }),
+);
+export const categoryList = Array.from(categoryMap.values());
+export const categoryRecord = Object.fromEntries(categoryMap.entries());
