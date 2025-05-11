@@ -4,6 +4,7 @@ import Header from '@/components/layouts/header/Header';
 import Footer from '@/components/layouts/Footer';
 import ThemeProvider from '@/components/layouts/header/theme-toggle/Provider';
 import Toaster from '@/components/ui/Toaster';
+import QueryParamListener from '@/components/common/QueryParamListener';
 
 export const metadata: Metadata = {
   title: '사나이클럽',
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ThemeProvider>
+          <QueryParamListener />
           <Header />
           {children}
           <Footer />

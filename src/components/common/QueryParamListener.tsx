@@ -1,20 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 interface QueryParamListenerProps {
   denied?: string;
 }
 
-const QueryParamListener = ({ denied }: QueryParamListenerProps) => {
-  const hasShown = useRef(false);
+const QueryParamListener = ({}: QueryParamListenerProps) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const denied = searchParams.get('denied');
 
   useEffect(() => {
-    if (!denied || hasShown.current) return;
-    hasShown.current = true;
+    if (!denied) return;
 
     setTimeout(() => {
       if (denied === 'unauthorized') {
@@ -24,7 +25,7 @@ const QueryParamListener = ({ denied }: QueryParamListenerProps) => {
       }
 
       // 쿼리 파라미터 제거
-      router.replace('/', { scroll: false });
+      router.replace(pathname, { scroll: false });
     }, 0);
   }, [denied, router]);
   return null;

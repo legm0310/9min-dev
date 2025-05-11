@@ -1,15 +1,11 @@
-import QueryParamListener from '@/components/common/QueryParamListener';
+import RecentPostList from '@/components/posts/list/RecentPostList';
 import Landing from '@/components/ui/Landing';
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { denied?: string };
-}) {
+export default async function Home() {
   return (
     <div>
-      <QueryParamListener denied={searchParams.denied} />
-      <Landing />
+      {/* <Landing /> */}
+      <RecentPostList />
     </div>
   );
 }
