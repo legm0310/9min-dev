@@ -49,21 +49,24 @@
   .section-heading-semibold {
     @apply text-3xl md:text-4xl font-semibold common-letter-spacing leading-tight;
   }
+  .menu-item {
+    @apply text-sm md:text-lg font-semibold common-letter-spacing leading-tight;
+  }
 
   .list-grid-only-col1 {
-    @apply grid grid-cols-1 gap-7;
+    @apply grid grid-cols-1 gap-6 items-stretch;
   }
 
   .list-grid-2col {
-    @apply grid grid-cols-1 gap-7 md:grid-cols-2;
+    @apply grid grid-cols-1 gap-6 items-stretch md:grid-cols-2;
   }
 
   .list-grid-4col {
-    @apply grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+    @apply grid grid-cols-1 gap-6 items-stretch sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
   }
 
   .tag-pill {
-    @apply px-2 py-0.5 text-xs font-medium border rounded-lg text-muted-foreground border-muted bg-muted;
+    @apply px-2 py-1 text-sm font-medium border rounded-lg text-muted-foreground border-muted bg-muted;
   }
 
   .tag-pill:hover {
