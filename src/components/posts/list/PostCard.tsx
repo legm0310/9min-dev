@@ -14,10 +14,22 @@ const PostCard = ({ postInfo }: PostCardProps) => {
   const label = getCategoryLabel(postInfo.category) ?? postInfo.category;
 
   return (
-    <Link href={`${postInfo.url}`} className="">
-      {postInfo.thumbnail && (
-        <Image src={postInfo.thumbnail} alt={postInfo.title} />
-      )}
+    <Link
+      href={`${postInfo.url}`}
+      className="px-2 py-4 rounded-md hover:shadow-lg"
+    >
+      <div className="relative aspect-video w-full rounded-t-md">
+        <Image
+          src={postInfo.thumbnail}
+          alt={postInfo.title}
+          sizes="(max-width: 1000px) 50vw, 450px"
+          fill
+          priority
+          style={{
+            objectFit: 'cover',
+          }}
+        />
+      </div>
       <Category name={label} className="text-primary" />
       <h2 className="my-1">{postInfo.title}</h2>
       <div className="my-2 flex gap-1.5">

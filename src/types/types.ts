@@ -19,7 +19,7 @@ export interface PostSummary {
   tags: string[];
   readingTime: string;
   url: string;
-  thumbnail?: string;
+  thumbnail: string;
 }
 
 export interface Post extends PostSummary {

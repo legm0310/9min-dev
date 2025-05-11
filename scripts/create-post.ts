@@ -9,15 +9,24 @@ if (!categoryPath || !slug) {
   process.exit(1);
 }
 
+const imageDirPath = path.join(
+  'public/contents/posts',
+  `/${categoryPath}`,
+  `/${slug}`,
+);
 const postDir = path.join('src/contents', `/${categoryPath}`, `/${slug}`);
 const filePath = path.join(postDir, 'content.mdx');
 
+const ymd = (d: Date) =>
+  `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+
 const frontmatter = `---
 title: ''
-date: ''
+date: '${ymd(new Date())}'
 category: '${categoryPath}'
 tags: []
-thumbnail: ''
+thumbnail: '/contents/posts/${categoryPath}/preview.jpg'
+description: ''
 ---
 
 # ${slug}
@@ -27,3 +36,5 @@ fs.mkdirSync(postDir, { recursive: true });
 fs.writeFileSync(filePath, frontmatter);
 
 console.log(`✅ Created: ${filePath}`);
+
+fs.mkdirSync(imageDirPath, { recursive: true });
