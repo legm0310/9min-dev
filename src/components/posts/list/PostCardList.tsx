@@ -12,7 +12,7 @@ const PostCardList = ({ posts, className = '' }: PostCardListProps) => {
   return hasPost ? (
     <ul className={`list-grid-2col list-none ${className}`}>
       {posts.map((post) => (
-        <li key={post.slug}>
+        <li key={`${post.category}/${post.slug}`}>
           <PostCard postInfo={post} />
         </li>
       ))}
