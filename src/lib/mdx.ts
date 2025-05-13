@@ -1,6 +1,7 @@
 import { compileMDX, CompileMDXResult } from 'next-mdx-remote/rsc';
 import type { PluggableList } from 'unified';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import rehypeSlug from 'rehype-slug';
 import rehypePrettyCode from 'rehype-pretty-code';
 import MdxComponents from '@/components/mdx/MdxComponents';
@@ -10,7 +11,7 @@ const prettyCodeOptions = {
   keepBackground: true,
 };
 
-export const remarkPlugins: PluggableList = [remarkGfm];
+export const remarkPlugins: PluggableList = [remarkGfm, remarkBreaks];
 
 export const rehypePlugins: PluggableList = [
   [rehypePrettyCode, prettyCodeOptions],
