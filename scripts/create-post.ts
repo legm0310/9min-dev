@@ -25,7 +25,7 @@ title: ''
 date: '${ymd(new Date())}'
 category: '${categoryPath}'
 tags: []
-thumbnail: '/contents/posts/${categoryPath}/preview.jpg'
+thumbnail: '/contents/posts/${categoryPath}/${slug}/preview.jpg'
 description: ''
 ---
 
@@ -35,6 +35,10 @@ description: ''
 fs.mkdirSync(postDir, { recursive: true });
 fs.writeFileSync(filePath, frontmatter);
 
-console.log(`✅ Created: ${filePath}`);
+console.log(`✅ Created MDX File: ${filePath}`);
 
 fs.mkdirSync(imageDirPath, { recursive: true });
+
+console.log(
+  `✅ Created Image Directory: public/contents/posts/${categoryPath}/${slug}`,
+);
