@@ -62,6 +62,11 @@ const config: Config = {
           DEFAULT: 'hsl(var(--caption))',
           foreground: 'hsl(var(--caption-foreground))',
         },
+        //todo remove
+        'codeblock-title': {
+          DEFAULT: 'hsl(var(--codeblock-title-bg))',
+          foreground: 'hsl(var(--codeblock-title-fg))',
+        },
         stroke: 'var(--nav-stroke)',
       },
 
