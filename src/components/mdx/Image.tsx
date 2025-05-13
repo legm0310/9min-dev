@@ -11,7 +11,7 @@ export const Image = ({
       className={`mx-auto mb-0 rounded-md ${className}`}
     />
     {alt && alt !== '' && (
-      <span className="mt-2 mb-6 block text-center text-sm text-muted-foreground">
+      <span className="mt-2 mb-8 block text-center text-sm text-muted-foreground">
         {alt}
       </span>
     )}
