@@ -16,7 +16,11 @@ const ThemeToggle = () => {
 
   return (
     <Button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-      {theme === 'dark' ? <DarkIcon /> : <LightIcon />}
+      {theme === 'dark' ? (
+        <DarkIcon className="w-6 md:w-8 h-6 md:h-8" />
+      ) : (
+        <LightIcon className="w-6 md:w-8 h-6 md:h-8" />
+      )}
     </Button>
   );
 };

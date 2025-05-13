@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
 interface LockIconProps {
-  // onToggle?: (locked: boolean) => void;
   open: boolean;
+  className?: string;
 }
 
-const LockIcon = ({ open }: LockIconProps) => {
+const LockIcon = ({ open, className = '' }: LockIconProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [localOpen, setLocalOpen] = useState(open);
 
@@ -24,7 +24,7 @@ const LockIcon = ({ open }: LockIconProps) => {
   return (
     <div
       onClick={handleClick}
-      className={`w-8 h-8 cursor-pointer transition-transform duration-300 text-[color:var(--nav-stroke)] 
+      className={`w-6 md:w-8 h-6 md:h-8 cursor-pointer transition-transform duration-300 text-[color:var(--nav-stroke)] ${className}
         ${isAnimating ? 'rotate-45' : 'hover:rotate-12 hover:scale-110'}
       `}
     >

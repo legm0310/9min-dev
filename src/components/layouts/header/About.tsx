@@ -2,9 +2,8 @@ import Link from 'next/link';
 
 const About = () => {
   return (
-    // <a href="/about">
     <Link href="/">
-      <p className="text-lg font-semibold">About</p>
+      <p className="menu-item">About</p>
     </Link>
   );
 };

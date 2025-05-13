@@ -8,7 +8,9 @@ type ButtonProps = {
 const Button = ({ children, className = '', ...props }: ButtonProps) => {
   return (
     <button
-      className={`px-3 py-2 rounded-md text-sm text-black hover:bg-gray-200 transition-colors ${className}`}
+      className={`px-2 md:px-3 py-1 md:py-2 rounded-md text-sm font-medium transition-colors
+  text-foreground hover:bg-muted-hover
+  ${className}`}
       {...props}
     >
       {children}
