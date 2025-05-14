@@ -10,8 +10,8 @@ const DonationIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
     <div
       onClick={handleClick}
-      className={`w-6 md:w-8 h-6 md:h-8 cursor-pointer transition-transform duration-300 text-[color:var(--nav-stroke)]
-      ${isClicked ? ' rotate-45 text-yellow-400' : 'hover:rotate-12 hover:scale-110'}
+      className={`w-6 md:w-8 h-6 md:h-8 transition-transform duration-300 text-[color:var(--nav-stroke)]
+      ${isClicked ? ' rotate-45 text-yellow-400' : 'group-hover:rotate-12 group-hover:scale-110'}
     `}
     >
       <svg

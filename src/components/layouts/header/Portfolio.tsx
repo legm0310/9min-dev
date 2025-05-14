@@ -1,10 +1,6 @@
-import Link from 'next/link';
+import MenuItemNavButton from '@/components/ui/MenuItemButton';
 
 const Portfolio = () => {
-  return (
-    <Link href="/">
-      <p className="menu-item">Portfolio</p>
-    </Link>
-  );
+  return <MenuItemNavButton label="Portfolio" href="/portfolio" />;
 };
 export default Portfolio;

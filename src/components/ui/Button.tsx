@@ -1,14 +1,14 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
+import clsx from 'clsx';
 
 type ButtonProps = {
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
-} & ButtonHTMLAttributes<HTMLButtonElement>;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button = ({ children, className = '', ...props }: ButtonProps) => {
   return (
     <button
-      className={`px-2 md:px-3 py-1 md:py-2 rounded-md text-sm font-medium transition-colors
+      className={`px-1 md:px-2 py-1 rounded-md text-sm font-medium transition-colors
   text-foreground hover:bg-muted-hover
   ${className}`}
       {...props}
@@ -19,3 +19,32 @@ const Button = ({ children, className = '', ...props }: ButtonProps) => {
 };
 
 export default Button;
+
+type ButtonVariant = 'default' | 'muted' | 'destructive' | 'icon';
+
+interface ExtButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  variant?: ButtonVariant;
+  className?: string;
+}
+
+const ExtButton = ({
+  children,
+  variant = 'default',
+  className = '',
+  ...props
+}: ExtButtonProps) => {
+  const base = '';
+  const variants = {
+    default: '',
+    muted: '',
+    destructive: '',
+    icon: '',
+  };
+
+  return (
+    <button className={clsx(base, variants[variant], className)} {...props}>
+      {children}
+    </button>
+  );
+};

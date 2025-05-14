@@ -15,12 +15,11 @@ const ThemeToggle = () => {
   if (!mounted) return null;
 
   return (
-    <Button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-      {theme === 'dark' ? (
-        <DarkIcon className="w-6 md:w-8 h-6 md:h-8" />
-      ) : (
-        <LightIcon className="w-6 md:w-8 h-6 md:h-8" />
-      )}
+    <Button
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className="group"
+    >
+      {theme === 'dark' ? <DarkIcon /> : <LightIcon />}
     </Button>
   );
 };

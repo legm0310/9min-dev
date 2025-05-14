@@ -1,11 +1,7 @@
-import Link from 'next/link';
+import MenuItemNavButton from '@/components/ui/MenuItemButton';
 
 const About = () => {
-  return (
-    <Link href="/">
-      <p className="menu-item">About</p>
-    </Link>
-  );
+  return <MenuItemNavButton label="About" href="/about" />;
 };
 
 export default About;

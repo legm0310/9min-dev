@@ -5,7 +5,7 @@ import DonationIcon from './DonationIcon';
 
 const Donation = () => {
   return (
-    <Button>
+    <Button className="group">
       <DonationIcon />
     </Button>
   );

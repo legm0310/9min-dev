@@ -1,7 +1,7 @@
-const DarkIcon = ({ className, ...props }: { className?: string }) => {
+const DarkIcon = ({ ...props }: { className?: string }) => {
   return (
     <div
-      className={`w-8 h-8 group hover:rotate-12 hover:scale-110 duration-200 text-[color:var(--nav-stroke)] ${className ?? ''}`}
+      className={`w-5 md:w-6 h-5 md:h-6 group-hover:rotate-12 group-hover:scale-110 duration-200 text-foreground`}
     >
       <svg
         {...props}

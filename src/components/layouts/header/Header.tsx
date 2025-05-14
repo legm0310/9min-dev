@@ -26,9 +26,9 @@ const Header = () => {
           : 'bg-[color:var(--background)]'
       }`}
     >
-      <div className="w-full mx-auto px-6 py-4 flex justify-between items-center ">
+      <div className="w-full h-full mx-auto px-6 py-4 flex justify-between items-center ">
         <Logo />
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2">
           <Posts />
           <About />
           <Portfolio />
