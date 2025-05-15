@@ -85,17 +85,48 @@
   --primary: 188 93% 43%; /* #08b8d3 */
   --primary-foreground: 180 2% 13%; /* #202121; */
 
+  --secondary: 0 0% 0%;
+  --secondary-foreground: 0 0% 0%;
+
+  --accent: 0 0% 0%;
+  --accent-foreground: 0 0% 0%;
+
   --muted: 220 14% 95%; /* 밝은 회색 (배경용) → #f3f4f6 근처 */
   --muted-foreground: 220 10% 40%; /* 어두운 회색 텍스트 → #6b7280 근처 */
-  --muted-hover: 220 10% 85%;
+  --muted-hover: 220 14% 90%;
+
+  --destructive: 0 0% 0%;
+  --destructive-foreground: 0 0% 0%;
+
+  --success: 0 0% 0%;
+  --success-foreground: 0 0% 0%;
+
+  --warning: 0 0% 0%;
+  --warning-foreground: 0 0% 0%;
+
+  --info: 0 0% 0%;
+  --info-foreground: 0 0% 0%;
 
   --caption: 220 14% 95%;
   --caption-foreground: 0 0% 50%;
 
+  --card: 0 0% 0%;
+  --card-foreground: 0 0% 0%;
+
+  --popover: 0 0% 0%;
+  --popover-foreground: 0 0% 0%;
+
+  --input: 0 0% 0%;
+  --input-foreground: 0 0% 0%;
+
+  --surface: 0 0% 0%;
+  --surface-foreground: 0 0% 0%;
+
+  --border: 0 0% 0%;
+  --overlay: 0 0% 0%;
+
   --codeblock-title-bg: 220 9% 28%;
   --codeblock-title-fg: 220 20% 90%;
-
-  --nav-stroke: #222125;
 }
 
 .dark {
@@ -105,17 +136,48 @@
   --primary: 188 93% 43%; /* #08b8d3 */
   --primary-foreground: 180 2% 13%; /* #202121; */
 
+  --secondary: 0 0% 0%;
+  --secondary-foreground: 0 0% 0%;
+
+  --accent: 0 0% 0%;
+  --accent-foreground: 0 0% 0%;
+
   --muted: 220 10% 20%; /* 어두운 회색 (배경용) → #2a2c33 */
   --muted-foreground: 220 12% 80%; /* 밝은 회색 텍스트 → #d1d5db */
   --muted-hover: 220 10% 25%;
 
+  --destructive: 0 0% 0%;
+  --destructive-foreground: 0 0% 0%;
+
+  --success: 0 0% 0%;
+  --success-foreground: 0 0% 0%;
+
+  --warning: 0 0% 0%;
+  --warning-foreground: 0 0% 0%;
+
+  --info: 0 0% 0%;
+  --info-foreground: 0 0% 0%;
+
   --caption: 220 10% 20%;
   --caption-foreground: 0 0% 50%;
 
+  --card: 0 0% 0%;
+  --card-foreground: 0 0% 0%;
+
+  --popover: 0 0% 0%;
+  --popover-foreground: 0 0% 0%;
+
+  --input: 0 0% 0%;
+  --input-foreground: 0 0% 0%;
+
+  --surface: 0 0% 0%;
+  --surface-foreground: 0 0% 0%;
+
+  --border: 0 0% 0%;
+  --overlay: 0 0% 0%;
+
   --codeblock-title-bg: 220 13% 18%;
   --codeblock-title-fg: 220 14% 85%;
-
-  --nav-stroke: var(--white);
 }
 
 /* 코드블럭 스타일 */
