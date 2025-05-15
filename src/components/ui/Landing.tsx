@@ -1,6 +1,10 @@
 import clsx from 'clsx';
 
-const Landing = () => {
+interface LandingProps {
+  children: React.ReactNode;
+}
+
+const Landing = ({ children }: LandingProps) => {
   return (
     <div>
       <div
@@ -11,7 +15,7 @@ const Landing = () => {
           'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl',
         )}
       >
-        이규민의 땀내나는 <span className="italic">사나이클럽</span>
+        {children}
       </div>
     </div>
   );
