@@ -4,11 +4,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-interface QueryParamListenerProps {
-  denied?: string;
-}
-
-const QueryParamListener = ({}: QueryParamListenerProps) => {
+const QueryParamListener = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -27,7 +23,7 @@ const QueryParamListener = ({}: QueryParamListenerProps) => {
       // 쿼리 파라미터 제거
       router.replace(pathname, { scroll: false });
     }, 0);
-  }, [denied, router]);
+  }, [denied, router, pathname]);
   return null;
 };
 
