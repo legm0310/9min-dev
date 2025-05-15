@@ -1,0 +1,170 @@
+---
+title: 'Golang의 입력값 읽어오기'
+date: '2025-04-19'
+category: 'development'
+tags: ['golang']
+thumbnail: '/contents/posts/development/golang-input/preview.jpg'
+---
+
+{/* ## Golang 입력 처리 .. 한번 헤더를 엄청 길게 만들어서 어떻게되나 확인해보겠습니다 */}
+
+## Golang 입력 처리
+
+Go에서는 표준 입력을 읽을 때 여러가지 입력 방식을 사용하지만 핵심은 `os.Stdin`을 어떤 방식으로 래핑하느냐에 있다
+
+### **입력 구조**
+
+> 키보드 입력 -> `os.Stdin (*os.File)` -> `bufio.Reader` -> `fmt.Scan` 또는 `bufio.Scanner`
+
+`fmt.Scan`과 `bufio.Scanner` 모두 내부적으로 `os.Stdin`을 기반으로 동작하며 `fmt.Scan`은 내부에서 `bufio.Reader`또는 `Read()`를 직접 호출하고, `bufio.Scanner`는 `bufio.Reader`를 래핑한 구조
+
+## 입력 패키지 비교
+
+### `fmt.Scan`
+
+- 가장 직관적이며 간단한 처리 방식.
+- 내부적으로 `fmt.Fscan(os.Stdin, ...)` 구조
+- **공백 단위로 입력을 파싱**하고 지정한 변수 타입에 맞춰 자동 변환됨
+
+내부 동작 흐름
+
+```go showLineNumbers
+// fmt.Scan == fmt.Fscan(os.Stdin, ...)
+func Scan(a ...interface{}) (n int, err error) {
+    return Fscan(os.Stdin, a...)
+}
+```
+
+이후 `Fscan()`내부적으로 fmt 패키지의 스캐너가 `Read()` 또는 `ReadRune()`을 통해 `os.Stdin`에서 데이터를 읽어 패턴에 맞게 파싱
+
+장점
+
+- 짧고 간단함
+
+단점
+
+- 에러 핸들링이 까다로움
+- 줄 단위 입력 또는 복잡한 파싱 불가능
+- 대량 입력에서 비교적 떨어지는 성능
+
+{/* ### 테스트용으로 한번 긴 헤더를 만들어보고 있습니다 */}
+
+### `bufio.Scanner`
+
+{/* ### 테스트용으로 긴 헤더를 만들어보고 있습니다. 어떻게될지 정말 긴 헤더를 만들어보겠습니다. */}
+
+- **한 줄 단위 입력처리**에 적합한 구조
+- 내부적으로 `bufio.Reader`를 사용함.
+- `scanner.Scan()`을 호출 -> 내부에서 `ReadLine()` -> 버퍼에 저장 -> `Text()`로 문자열 반환
+
+내부 동작 흐름
+
+1. `scanner.Scan()` 호출
+2. 내부적으로 `scanner.ReadLine()` 호출
+3. `readLine()` 내부에서 다음 중 하나 사용:
+   - `bufio.Reader.ReadSlice('\n')`
+   - 사용자가 SplitFunc을 커스텀할 경우, 다른 방식
+4. `ScanLines()` -> `ReadSlice('\n')`
+5. 버퍼에 읽은 데이터 저장 -> 내부 필드 `buf []byte`에 포인터로 가리킴
+6. `scanner.Text()` 호출 시 `string(scanner.buf)` 반환
+
+```go showLineNumbers
+// 디폴트 SplitFunc는 bufio.ScanLines
+func ScanLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
+    if i := bytes.IndexByte(data, '\n'); i >= 0 {
+        return i + 1, dropCR(data[0:i]), nil
+    }
+    ...
+}
+
+//사용 예
+scanner := bufio.NewScanner(os.Stdin)
+for scanner.Scan() {
+    line := scanner.Text() // \n 기준으로 읽음
+}
+```
+
+내부적으로 `bufio.Reader.ReadSlice('\n')`사용
+
+Scanner 사용 시 ReadSlice는 버퍼 내애 파싱 기준 문자('\n')가 없으면 버퍼 제한을 넘겨 `ErrBufferFull`반환
+
+기본 버퍼 크기는 64KB, 필요시 확장 가능
+
+장점
+
+- 줄 단위 처리 최적화
+- 에러 핸들링 간편 (`Scan()==false`로 종료 체크)
+- `strings.Fields()`, `strings.Split()` 조합으로 배열 처리 가능
+
+단점
+
+- `줄 내부의 공백 파싱은 직접` 해야 함
+- 버퍼 제한을 초과할 시 에러 발생
+
+#### 정리
+
+- scanner로 대량의 데이터 입력 시 에러 발생 이유:
+  - scanner는 입력을 파싱할 때 디폴트로 `ScanLines()` 사용 (내부적으로 `ReadSlice()` 사용)
+  - 입력 스트림에 파싱 구분자가 없을 시 입력이 계속 이어지면서 버퍼 초과 -> `ErrBufferFull` 반환 -> `ErrTooLong` 반환
+  -
+
+### `bufio.NewReader`
+
+- 가장 유연한 입력 처리 방식
+- ReadString, ReadBytes, ReadLine, ReadRune 등 다양한 방식
+- 대량 입력, 복잡한 포맷, 바이너리 등 모두 커버 가능
+
+내부 동작 흐름
+
+1. 버퍼가 비어있으면 내부에서 `os.Stdin.Read()` 호출
+2. 데이터를 내부 버퍼에 저장 (`r.buf []byte`)
+3. `ReadString(delim byte)` 호출 시 ReadSlice(delim) 호출
+4. `ReadSlice()`는 버퍼에 delim이 있는지 확인, 없으면 다시 `Read()` 호출해서 더 채움
+5. delim을 포함하는 슬라이스 `[]byte` 반환
+
+```go showLineNumbers
+func (b *Reader) ReadString(delim byte) (string, error) {
+    line, err := b.ReadSlice(delim)
+    return string(line), err
+}
+
+//사용 예
+
+reader := bufio.NewReader(os.Stdin)
+line, err := reader.ReadString('\n') // 원하는 종료 문자로 읽음
+```
+
+내부적으로 `os.File.Read()` -> 내부 버퍼에 복사 -> `ReadString()` 등으로 추출. Scanner는 Reader보다 제한된 버전의 인터페이스
+
+장점
+
+- 모든 유형의 입력 가능 (줄, 바이트, 문자, 유니코드, 바이너리)
+- 유연하게 파싱 가능 (콤마, 탭 구분)
+
+단점
+
+- 코드가 길어짐
+- 모든 파싱을 수동으로 처리
+
+#### 정리
+
+- 여러 라인을 입력 받을 시: `buifo.NewScanner`
+- 한 라인에 대량 데이터 입력, 또는 복잡한 포맷일 시: `bufio.NewReader`
+
+## 입력 데이터형
+
+모든 입력은 바이트 슬라이스(`[]byte`)로 읽힘
+
+일반적인 입력 흐름:
+
+> 키보드 입력 -> `[]byte` (버퍼에 저장) -> `string` 또는 `rune` -> 수동 변환
+
+숫자형 입력 시 표준 라이브러리는 바이트를 문자열로 바꾼 뒤 숫자로 바꿈. 대량 숫자 처리 시 바이트 배열을 문자 단위를 기준으로 숫자형으로 파싱하면 빠르고 메모리 할당도 적음
+
+```go showLineNumbers title="parse"
+b := []byte("123456")
+n := 0
+for _, ch := range b {
+    n = n*10 + int(ch-'0')  // 아스키 문자 '0'은 48
+}
+```

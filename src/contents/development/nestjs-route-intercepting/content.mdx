@@ -1,0 +1,161 @@
+---
+title: 'Nest.js 동적 라우트, 핸들러 실행 규칙'
+date: '2025-05-13'
+category: 'development'
+tags: ['nest.js', 'typescript']
+thumbnail: '/contents/posts/development/nestjs-route-intercepting/preview.jpg'
+description: ''
+---
+
+## 문제 상황
+
+현재 진행 중인 프로젝트의 팔로우에서, 경로 파라미터로 값을 받는 테스트 api와 액세스 토큰을 통해 전달받는 프로덕션 api를 구현하던 중 오류가 발생했다. 테스트 api는 정상적으로 동작하는데, 프로덕션 api는 쿼리 실패 에러가 로그에 찍혔다.
+
+![에러 메시지](/contents/posts/development/nestjs-route-intercepting/에러메시지.png)
+
+## 요청 처리 흐름
+
+테스트용 api는 아래와 같은 처리 흐름이 생긴다
+
+> Controller -> Query handler -> Service -> Repository
+
+프로덕션 api는 토큰 검사와 파싱을 위한 가드로 인해 아래와 같은 처리 흐름이 생긴다.
+
+> Guard -> Stategy -> Controller -> Query handler -> Service -> Repository
+
+에러 로그에서는 조건문에 들어갈 값이 `NaN`으로 찍혔기 때문에, 파싱 한 `userId`가 정상적이지 않다고 추측했다.
+
+## `Controller`, `Jwt Guard` 체크 및 로깅 실패
+
+테스트 api와 프로덕션 api의 차이는 토큰 처리를 위한 가드 유무밖에 없다.
+userId를 각각 경로 파라미터와 액세스 토큰을 통해 가져온다.
+
+```ts showLineNumbers title="user.controller.ts"
+  ...
+
+  @Get('follower')
+  @UseGuards(JwtAccessAuthGuard)
+  async getFollowers(@UserId('userId') userId: number) {
+    return await this._queryBus.execute(new GetFollowerQuery(userId, false));
+  }
+
+  @Get('follower/:id')
+  async testGetFollowers(@Param('id') userId: number) {
+    return await this._queryBus.execute(new GetFollowerQuery(userId, false));
+  }
+
+```
+
+일단 전달받은 `userId`를 체크하기 위해 컨트롤러에서 로그를 찍어봤지만 아무것도 찍히지 않았다.
+테스트 api와의 차이는 가드를 추가하여 토큰을 파싱 하려 시도한 것뿐이기 때문에 더 앞단에 문제가 있다고 판단해 `Guard`와 `Stategy`에도 로깅을 했지만 역시 아무것도 찍히지 않았다.
+
+보통 디버깅할 때 습관적으로 로그를 찍어보곤 하는데, 이처럼 로그가 전혀 찍히지 않으면 어디에서부터 어떻게 해결할지, 문제가 무엇인지 파악조차 할 수 없어 곤란한 경우가 많다.
+
+확실한 사실은 문제가 생긴 api와 정상 api의 차이점은 가드 유무라는 것이다. 그래서 가드를 중점으로 문제점을 찾았지만 성과가 없었다.
+
+## 원인 분석
+
+에러 로그를 자세히 살펴보니 이상한 점이 있었다. 앞 단에 있는 컨트롤러, 가드, 전략 파일에 전부 로깅을 해봤으나 찍히지 않았다. 그 말인즉슨 해당 **진입점에 들어오지 않았다**고 볼 수 있다.
+
+하지만 스택 트레이스를 보면 리포지토리 영역의 `typeorm` 에러인 것을 볼 수 있다. 실행 흐름 상 리포지토리 영역에서 예외가 발생하려면 앞 단의 예외 처리가 안되었어도, 최소한 로깅이 찍혔어야 했지만 그렇지 않았다. 컨트롤러에 진입 자체를 안 하고 리포지토리까지 갈 수는 없다.
+
+단순한 문제였다. 본래 의도한 라우트에 요청이 잡히지 않고 상단에 있는 라우트에 요청이 잡혔다. 애초에 다른 라우트라서 로그가 전혀 찍히지 않았다.
+~~쉽게 해결한 것처럼 말하지만 뭐에 홀려서 눈치채는데 오래 걸렸다~~
+
+```ts showLineNumbers title="user.controller.ts"
+
+  //이 라우트에 잡힘
+  @Get(':id')
+  async getUserById(
+    @Param('id') id: number,
+  ): Promise<Nullable<ShowUserResDto>> {
+    const user = await this._getUserUseCase.getUserById(id);
+    return UserMapper.toDto(user);
+  }
+
+  ...
+
+  //원래 의도한 라우트
+  @Get('follower')
+  @UseGuards(JwtAccessAuthGuard)
+  async getFollowers(@UserId('userId') userId: number) {
+    return await this._queryBus.execute(new GetFollowerQuery(userId, false));
+  }
+
+  @Get('follower/:id')
+  async testGetFollowers(@Param('id') userId: number) {
+    return await this._queryBus.execute(new GetFollowerQuery(userId, false));
+  }
+
+```
+
+## Nestjs의 라우트 등록 및 핸들러 실행 방식
+
+Nestjs는 내부적으로 Express/Koa 위에 path-to-regexp 기반 라우터를 사용해서 정의된 순서대로 라우트를 등록하고, 가장 먼저 매칭되는 핸들러를 실행한다.
+
+### 라우트 등록 순서
+
+1. **정적 경로**는 `/user/follower` 정확히 일치할 때만 매칭
+2. **동적 경로** 중 긴 것은 `/user/follower/123/4` 처럼 `:id`가 있고 그 뒤에 또 동적 경로가 있어 3번보다 더욱 구체적
+3. **동적 경로** 중 짧은 것은 `/user/follower/123` 등 `:id` 위치에 무엇이든 올 수 있다
+4. **와일드카드**는 `/user/follower/anything/else` 처럼 모든 뒤쪽 세그먼트를 잡는다
+
+Nestjs는 위 순서대로 라우트를 등록하고, 요청이 들어오면 **위에서부터 하나씩** 비교해 가장 먼저 승인받은 핸들러를 실행한다
+
+```ts showLineNumbers title="user.controller.ts"
+@Controller('user')
+export class UserController {
+  // 1. 정적(static) 경로 - 완전 일치 매칭
+  @Get('follower')
+  async getFollowers() {}
+
+  // 2-1. 동적(static) 경로(긴 것) - 패턴 매칭, 더욱 구체적
+  @Get('follower/:id/:otherData')
+  async getFollowersBySomeData() {}
+
+  // 2-2. 동적(static) 경로(짧은 것) - 패턴 매칭, 상대적으로 덜 구체적
+  @Get('follower/:id')
+  async getFollowersById() {}
+
+  // 3. 와일드카드(wildcard) 경로 - 모든 하위 경로 매칭
+  @Get('follower/*')
+  async catchAllFollowers() {}
+}
+```
+
+### 등록 순서가 중요한 이유
+
+- **정적 경로 vs 동적 경로**
+  - `/user/follower` 요청은 `/user/follower/:id` 경로로 넘어가지 않고, **정적** 핸들러가 먼저 실행되어야 의도된 동작이 된다.
+- **동적 경로 길이**
+
+  - `/user/follow/1/2` 요청이 있을 때
+
+  ```ts showLineNumbers
+  @Post('follow/:id')
+  async followA(...) { ... }
+
+  @Post('follow/:id/:otherId')
+  async followB(...) { ... }
+
+  ```
+
+  위 순서대로 했을 때 사실상 세그먼트 수가 달라 겹치지 않으니 문제가 되지 않지만, 많은 경로를 구현하다 보면 잡지 말아야 할 경로까지 잡거나 건너뛰는 등 **의도치 않은 매칭 충돌**이 발생할 수 있다.
+  그래서 다음과 같은 **특정성(specificity) 기준**으로 정리하는 것을 권장한다고 한다
+
+  > 정적(static) -> 같은 접두사의 더 특수한(dynamic, optional, wildcard) -> 덜 특수한(dynamic) -> catch-all
+
+## 해결 및 개선점
+
+사실 express, nestjs에서 경로 문제는 자주 겪었던 문제이다. 라우트를 등록할 때 습관적으로 오름차순으로 추가하다 보니 경로에 충돌이 생겼다.
+
+현재 등록된 api 경로들을 3단계로 정리한다
+
+1. **그룹화** -> 기능별로 묶기
+2. **그룹 내에서만 오름차순 정리** -> 경로 세그먼트 수 기준으로 작은 것 -> 큰 것 순으로 나열
+3. 같은 그룹 내 **충돌 가능 경로**는 특정성(specificity) 우선 -> 동적 경로 중 길이가 긴 것을 먼저 두어야 함.
+
+api 라우트를 등록할 때는 위에서 언급한 라우트 등록 순서 규칙대로 등록하여 **충돌을 최소화**한다.
+
+가능성을 열어두고 디버깅하지 않으면 주화입마에 빠져 다른 경우의 수를 생각하지 못할 때가 많다.
+지금 같은 경우도 전체를 보지 않고 테스트 api와 프로덕션 api의 차이점을 중심으로 디버깅했기 때문에 전체 api 경로에 대한 문제점을 빠르게 파악하지 못했다.
