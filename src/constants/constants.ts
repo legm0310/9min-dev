@@ -2,6 +2,8 @@ import { CategoryInfo } from '@/types/types';
 
 export const PHONE_WHITELIST = process.env.PHONE_WHILELIST?.split(',') ?? [];
 
+export const BASE_URL = process.env.BASE_URL;
+
 export const categoryOverrides: Record<string, Partial<CategoryInfo>> = {
   daily: { label: 'Daily' },
   travel: { label: 'Travel' },

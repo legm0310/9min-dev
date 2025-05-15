@@ -31,5 +31,6 @@ export interface CategoryInfo {
   label: string;
   parent?: string;
   icon?: string;
+  color?: string;
   description?: string;
 }
