@@ -72,6 +72,10 @@
   .tag-pill:hover {
     @apply bg-muted-hover text-foreground shadow-sm;
   }
+
+  .gradient-heading-color {
+    @apply text-transparent duration-200 bg-clip-text animate-gradient-scroll bg-[image:theme(backgroundImage.gradient)] bg-[length:200%_100%];
+  }
 }
 
 :root {
