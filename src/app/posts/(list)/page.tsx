@@ -13,7 +13,7 @@ const PostList = async ({ params }: PostListProps) => {
   const posts = await getPostSummaryList(category);
 
   return (
-    <section>
+    <section className="mt-16">
       <CategoryFilter curCategory={category} />
       <PostCardList posts={posts} />
     </section>

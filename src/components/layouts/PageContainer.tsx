@@ -7,7 +7,7 @@ const PageCotainer = ({
 }) => {
   return (
     <main
-      className={`flex flex-col flex-1 min-h-[calc(100vh-13.5rem)] mt-16 px-4 sm:px-6 ${className}`}
+      className={`flex flex-col flex-1 min-h-[calc(100vh-13.5rem)] px-4 sm:px-6 ${className}`}
     >
       {children}
     </main>
