@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "gen-post": "tsx scripts/create-post.ts "
+    "gen-post": "tsx scripts/create-post.ts",
+    "migration-posts": "tsx scripts/migration-posts.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.16",
