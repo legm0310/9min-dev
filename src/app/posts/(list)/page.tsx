@@ -10,8 +10,10 @@ interface PostListProps {
 
 const PostList = async ({ params }: PostListProps) => {
   const category = params.segments ? params.segments.join('/') : undefined;
-  const posts = await getPostSummaryList(category);
-
+  let posts = await getPostSummaryList(category);
+  if (!category) {
+    posts = posts.filter((post) => post.category !== 'admin');
+  }
   return (
     <section className="mt-16">
       <CategoryFilter curCategory={category} />
