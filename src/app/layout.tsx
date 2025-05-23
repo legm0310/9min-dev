@@ -7,7 +7,7 @@ import Toaster from '@/components/ui/Toaster';
 import QueryParamListener from '@/components/common/QueryParamListener';
 
 export const metadata: Metadata = {
-  title: '사나이클럽',
+  title: '화기엄금',
   description: '비밀창고',
 };
 

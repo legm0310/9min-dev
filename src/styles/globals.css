@@ -108,6 +108,9 @@
   --info: 210 100% 95%;
   --info-foreground: 210 100% 20%;
 
+  /* --info: 200 100% 94%;
+  --info-foreground: 200 80% 25%; */
+
   --warning: 45 100% 92%;
   --warning-foreground: 45 100% 20%;
 
@@ -158,6 +161,9 @@
 
   --info: 210 100% 40% / 15%;
   --info-foreground: 210 40% 90%;
+
+  /* --info: 200 90% 35% / 15%;
+  --info-foreground: 200 60% 88%; */
 
   --warning: 45 100% 50% / 15%;
   --warning-foreground: 45 100% 90%;
