@@ -1,0 +1,247 @@
+---
+title: 'Nestjs 팔로우 기능 구현 과정'
+date: '2025-05-21'
+category: 'development'
+tags: ['nest.js', 'typescript', 'mysql', 'typeorm']
+thumbnail: '/contents/posts/development/nestjs-follow-implements/preview.jpg'
+description: ''
+---
+
+## 팔로우 기능 구현
+
+진행중인 프로젝트에서 팔로우 기능이 필요해 구현하기로 했다.
+간단하게 구현할 수 있을 줄 알았는데 생각보다 신경 써야할 것이 많아 시간이 걸렸다. ~~역시 쉬운건 없음~~
+
+### 용어 정리
+
+기능을 구현하기 전에 헷갈릴 수 있는 용어부터 정리했다.
+물론 익숙한 단어들이기는 하지만, 굉장히 비슷한 단어들이기에 코드를 작성할 때 보면 헷갈리 여지가 있다.
+특히 팔로우 하는 대상을 **following**로 사용하는 경우도 있고 **followee**로 사용하는 경우도 있다.
+
+- 팔로우(follow): 상대방을 팔로우하는 행위
+- 팔로워(follwer): 나를 팔로우하는 대상
+- 팔로잉(follwing): 내가 팔로우하는 대상
+
+- 팔로우 하지 않음: `none`
+- 팔로우 요청 중: `pending`
+- 팔로우 중: `approved`
+
+### 요구 사항
+
+1. 양방향으로 팔로우 가능(맞팔로우)
+2. 팔로우 수락 및 거절 가능
+3. 팔로워 리스트 출력 시 해당 팔로워에 대한 팔로잉 여부 표시
+4. 팔로잉 리스트 출력 시 각 팔로잉 대상의 팔로워인가 여부 표시
+5. 사용자 프로필 조회 시 팔로워 팔로잉 수, 및 **조회 대상**과 **요청 주체**와의 **팔로우 관계**
+
+## 초기 설계
+
+userId를 외래키로 하는 followerId, followingId 필드는 필수적으로 필요하다
+팔로우 수락, 거절을 구현하기 위해서 follow 테이블에 팔로우 상태를 유지해야한다. 팔로우 상태를 `isApproved` 필드를 통해 판단한다
+
+상태는 다음과 같다:
+
+- 레코드 자체가 없으면 요청조차 하지 않은 상태
+- `isApproved` 필드가 `false`이면 아직 요청 중,
+- `true`이면 팔로우 승인, 완료.
+
+```ts showLineNumber title="follow 테이블 초기 설계"
+@Entity('follow')
+export class FollowEntity {
+  @PrimaryColumn()
+  @Index()
+  followerId: number;
+
+  @PrimaryColumn()
+  @Index()
+  followingId: number;
+
+  @Column('boolean', { default: false })
+  isApproved: boolean;
+
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  follower: UserEntity;
+
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  following: UserEntity;
+}
+```
+
+_3, 4번 요구사항_ 을 만족하기 위해 팔로워 조회 시 각 팔로워마다 조회 주체와의 관계를 표시해야한다.
+
+실제 구현에서는 `isApproved` 상태를 통해서 해당 팔로워와 조회 주체와의 팔로우 관계를 판단한다. `innerJoin`을 통해 UI에 표시할 팔로워 정보를 가져오고 추가로 `leftJoin`을 통해 반대로 조회 주체가 팔로워들을 팔로잉 하는지 조회한다. 이후에 `select`문에서 CASE 표현식으로 맞팔로우 여부를 구한다.
+
+추후 `isApproved == true`인 팔로워들만 추출 해야할 경우를 대비해 `andWhere` 조건을 추가했다.
+
+```ts showLineNumber title="findFollowers 초기 구현"
+  ...
+  async findFollowers(
+    userId: number,
+    onlyApproved: boolean,
+  ): Promise<FollowUser[]> {
+    const followers = await this._followRepository
+      .createQueryBuilder('f')
+      .innerJoin('f.follower', 'user') // 팔로워 유저 정보
+      .leftJoin(
+        FollowEntity,
+        'reverse',
+        'reverse.followerId = :myId AND reverse.followingId = user.id',
+        { myId: userId },
+      )
+      .where('f.followingId = :myId', { myId: userId })
+      .andWhere(onlyApproved ? 'f.isApproved = true' : '1=1')
+      .select([
+        'user.id AS id',
+        'user.email AS email',
+        'user.nickname AS nickname',
+        'user.image AS image',
+        'f.isApproved AS isApproved',
+        `CASE
+          WHEN reverse.followerId IS NOT NULL
+            AND reverse.isApproved = true
+            AND f.isApproved = true
+          THEN true
+          ELSE false
+        END AS isMutualFollow`,
+      ])
+      .getRawMany();
+
+    return followers.map((follower) => {
+      const { isApproved, isMutualFollow, ...rest } = follower;
+      return {
+        user: rest as UserSummary,
+        isApproved: Boolean(isApproved),
+        isMutualFollow: Boolean(parseInt(isMutualFollow)),
+      };
+    });
+  }
+```
+
+## 문제점
+
+`isApproved` 필드만으로 모든 상태를 표현하려고 하니 코드 가독성이 매우 떨어졌다.
+위의 `findFollowers` 코드를 보면 쿼리가 코드가 굉장히 장황하고 `select`문 내부에서 CASE 표현식으로 조건을 분기해 값을 구하고 있다.
+또한 `boolean` 값인 해당 상태는 팔로우 요청조차 하지 않은 상태를 표현할 수 없었다. 이 부분을 명확하게 표현해야한다.
+
+사용자 프로필 조회에서 사용자 정보, 맞팔로우 여부(`isMutualFollow`), 팔로우 팔로워 수만 리턴 하고 있다.
+맞팔로우 여부만 갖고서 조회 주체와 조회 대상의 팔로우 관계를 정의할 수 없다. 팔로우 관계를 정의하기 위해선 양방향의 팔로우 상태가 필요하다.
+즉, A와 B의 팔로우 관계를 정의하려면 A -> B의 팔로우 상태와 B -> A의 팔로우 상태를 알아야한다. 이 둘 양방향 관계를 묶는 하나의 인터페이스가 필요하다.
+
+## 수정 및 리팩토링
+
+db에서 레코드가 생성된다는 것은 이미 팔로우 요청 중이라는 의미이다. 그러나 `service` 및 `repository`레벨에서는 아직 팔로우 요청조차 하지 않았다는 상태가 필요하다. 그렇기 때문에 db레벨과 `service` `repository` 레벨에서 사용할 `read model`을 분리해야한다.
+
+또한 사용자 조회 및 리스트를 출력할 때 해당 사용자와의 관계를 파악하기 위해서 **조회 주체**와, **조회 대상**에 대한 **팔로우 상태**가 필요하다. **단방향이 아닌 양방향 상태**가 필요하기 때문에 `FollowRelationStatus`을 추가해서 `FollowUser` 리드모델에 해당 인터페이스를 추가한다
+
+```ts showLineNumber title="follow read model"
+export enum FollowStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+}
+
+export enum FollowRequestStatus {
+  NONE = 'none',
+  PENDING = FollowStatus.PENDING,
+  APPROVED = FollowStatus.APPROVED,
+}
+
+export interface FollowRelationStatus {
+  sent: FollowRequestStatus;
+  received: FollowRequestStatus;
+}
+
+export class FollowUser {
+  user: UserSummary;
+  followStatus: FollowRelationStatus;
+  isMutualFollow: boolean;
+}
+```
+
+### 테이블 수정 내용
+
+기존에 있던 `boolean` 타입의 `isApproved` 필드를 제거하고 상태를 더욱 명확하게 표현할 수 있는 `status` 필드를 추가한다.
+db레벨의 테이블에서는 `NONE` 값이 없는 `PENDING` 과 `APPROVED` 값만 존재하는 타입을 사용한다.
+
+```ts showLineNumber title="follow 테이블 수정"
+@Entity('follow')
+export class FollowEntity {
+  @PrimaryColumn()
+  @Index()
+  followerId: number;
+
+  @PrimaryColumn()
+  @Index()
+  followingId: number;
+
+  @Column('enum', { enum: FollowStatus, default: FollowStatus.PENDING })
+  status: FollowStatus;
+
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  follower: UserEntity;
+
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  following: UserEntity;
+}
+```
+
+### 리포지토리 코드 수정 내용
+
+`innerJoin`과 ₩으로 팔로워 리스트를 조회하는 것은 동일하다. 팔로우 상태를 구하는 과정에서 수정 내용이 있다.
+`isApproved` 값과 CASE 조건식을 통해 맞팔로우 여부를 계산했던 이전 코드와 다르게 상태값을 그대로 `followStatus` 객체에 넣어준다.
+상태에 따라 다음과 같은 경우의 수가 있다.
+
+1. a->b: `none`, b->a: `none`
+2. a->b: `none`, b->a: `pending`
+3. a->b: `none`, b->a: `approved`
+4. a->b: `pending`, b->a: `none`
+5. a->b: `pending`, b->a: `pending`
+6. a->b: `pending`, b->a: `approved`
+7. a->b: `approved`, b->a: `none`
+8. a->b: `approved`, b->a: `pending`
+9. a->b: `approved`, b->a: `approved`
+
+db레벨에서는 `pending`과 `apporved`의 값만 갖고 레코드가 없다면 아예 팔로우 요청을 한 적 없는 상태가 된다.
+그렇기 때문에 리포지토리 레벨에서는 `none`값을 추가해 세 가지 상태를 갖게 한다.(이전에 추가한 `FollowRequestStatus` 타입)
+상태를 명시해주면 `bool` 값을 통해 계산하는 것보다 코드가 직관적이며, 클라이언트측에서 맞팔로우 여부 뿐만 아니라 정확히 팔로우 상태가 어떤지 알 수 있다.
+
+```ts showLineNumber title="findFollowers 수정"
+  async findFollowers(
+    userId: number,
+    onlyApproved: boolean,
+  ): Promise<FollowUser[]> {
+    const followers = await this._followRepository
+      .createQueryBuilder('f')
+      .innerJoin('f.follower', 'user') // 팔로워 유저 정보
+      .leftJoin(
+        FollowEntity,
+        'reverse',
+        'reverse.followerId = :myId AND reverse.followingId = user.id',
+        { myId: userId },
+      )
+      .where('f.followingId = :myId', { myId: userId })
+      .andWhere(onlyApproved ? 'f.status = approved' : '1=1')
+      .select([
+        'user.id AS id',
+        'user.email AS email',
+        'user.nickname AS nickname',
+        'user.image AS image',
+        'f.status AS received',
+        'reverse.status AS sent',
+      ])
+      .getRawMany();
+
+    return followers.map((f) => {
+      const { received, sent, ...rest } = f;
+      return {
+        user: rest,
+        followStatus: {
+          sent: sent ?? FollowRequestStatus.NONE,
+          received,
+        },
+        isMutualFollow:
+          sent === FollowStatus.APPROVED && received === FollowStatus.APPROVED,
+      };
+    });
+  }
+
+```

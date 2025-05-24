@@ -1,0 +1,122 @@
+---
+title: 'Go 암호화 패키지와 인터페이스'
+date: '2025-01-21'
+category: 'development'
+tags: ['golang']
+thumbnail: '/contents/posts/development/go-encryption-interface/preview.jpg'
+description: ''
+---
+
+## 개요
+
+- go언어를 깊이 있게 알지 못하는 상황
+- ecdsa 암호화 패키지 사용중 타입 단언 부분에서 왜 각 암호 알고리즘마다 Public() 생성하지 않고 타입 단언을 하는지 의문점이 생김
+- 키 쌍으로 서명하는 암호들이 범용적으로 사용할 수 있도록 인터페이스를 따르는 것이라 유연하게 빈 인터페이스로 선언해두고 사용할 때 타입 단언을 하여 사용한다는 것을 알게됨.
+
+## Go언어에서 인터페이스 명시
+
+- 많은 암호 알고리즘에서 사용하는 서명, 공개키 생성 기능을 하나의 인터페이스를 통해 구현한다.
+- ecdsa도 내장되어있는 crypto 패키지의 Signer이라는 인터페이스를 따른다고 되어있다. 그러나 어디에도 해당 인터페이스를 따른다고 선언되어있는곳을 찾을 수 없었다
+- TS를 주로 해왔기때문에 구조체의 선언부를 습관적으로 찾아봤지만, go는 구조체를 할당할 때 인터페이스도 할당한다.
+
+```go showLineNumber title="interface 예제"
+type IA interface {
+    MethodA()
+}
+
+type A struct{}
+
+func (a A) MethodA() {
+    fmt.Println("Implemented!")
+}
+
+func main() {
+    var ia IA = A{} // A는 IA 인터페이스를 자동으로 구현, 제대로 안되있다면 컴파일 에러
+    ia.MethodA()    // 출력: Implemented!
+}
+```
+
+- 위와 같이 인터페이스를 강제하려면 구조체를 할당하면서 인터페이스 구현 여부 확인 과정이 필요하다.
+
+**만약 아래처럼 구조체의 함수를 사용할 때 할당하면서 인터페이스의 구현을 확인하지 않는다면?**
+
+```go showLineNumber title="interface 예제"
+type IA interface {
+    MethodA()
+}
+
+type A struct{}
+
+func (a A) MethodA() {
+    fmt.Println("Implemented!")
+}
+
+func main() {
+    ia := A{}
+    //인터페이스의 구현을 강제할 수 없을 여지가 생긴다
+    ia.MethodA()
+}
+```
+
+## 강타입과 덕타이핑
+
+<Callout type="info">
+  왜 위와 같이 인터페이스를 강제하지 않게 만들었을까
+</Callout>
+
+- go는 강타입 언어지만, 인터페이스는 덕타이핑을 기반으로 동작
+
+  - 구조체가 인터페이스에서 요구하는 메서드를 구현하면 자동으로 만족하는 방식
+  - 인터페이스를 선언적으로 구현하지 않아도 되고 할당할 때 인터페이스의 구현 여부를 확인하며 타입을 강제할 수 있다.
+  - 결과적으로 go 컴파일러는 인터페이스 요구사항을 충족하지 못하면 사용을 허락하지 않는다.
+  - 아래과 같은 상황에서 만약 `ecdsa.GenerateKey` 의 리턴 값인 PrivateKey가 Sign을 구현하지 않았다면 컴파일러는 에러를 출력한다.
+
+    ```go showLineNumber title="ecdsa.go"
+    type Signer interface {
+        Public() PublicKey
+        Sign(rand io.Reader, digest []byte, opts SignerOpts) ([]byte, error)
+    }
+    ...
+
+    func main() {
+    	// ECDSA Private Key 생성
+    	privKey, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+
+    	// Signer 인터페이스로 사용
+    	var signer crypto.Signer = privKey
+
+    	// Sign 메서드 호출
+    	signer.Sign(rand.Reader, []byte("message"), nil)
+    }
+
+    ```
+
+- TS는 덕 타이핑 기반의 언어이지만, 인터페이스는 명시적으로 implements 키워드를 통해 강타입적 방식을 따름.
+  - 클래스가 특정 인터페이스를 구현한다고 선언하며, 필요한 메서드가 없으면 컴파일 에러 발생시킨다.
+
+TS처럼 구현 계약을 강제하려면 implements 와 같은 키워드를 통해 특정 인터페이스를 따르고 있음을 명시해야한다. 그러나 go는 덕타이핑을 기반으로 **암묵적으로 인터페이스 계약을 만족**하도록 설계되었다.
+
+나는 C, 자바, go 등의 언어는 강타입 언어이고 TS는 덕타이핑 기반의 언어라고 생각하고 있었다. 그러나 이번 계기로 생각이 바뀌었다.
+
+생각해보면 TS는 타입에 대해서 유연하게 작용했지만 인터페이스에서는 꽤나 엄격하게 지켜지도록 했던 것 같다.
+그래서인지 go언어 인터페이스의 자유도에 어색함이 느껴졌다.
+
+또 왜 그렇게 생각했는지 그들의 철학과 의도가 궁금해졌다.
+
+## Go의 인터페이스 설계 철학과 덕타이핑 동작 방식에 대한 핵심
+
+**인터페이스로 명시적 할당하지 않아도 동작하는건 설계의 철학에 있다.**
+
+- go의 설계 철학은 간결함, 유연성, 실용성을 강조한다.
+- 인터페이스와 관련된 go의 설계 철학은 낮은 결합도와 간단한 추상화를 중심으로 이루어져 있다.
+- 모든 곳에서 인터페이스를 강제하지 않고 진짜 추상화가 필요한 경우에만 사용하도록 설계되어있다.
+- 인터페이스는 복잡성을 줄이고 다양한 구현체를 다룰 때 유용하게 사용된다. 단순히 구조체를 사용하는 경우에는 인터페이스를 사용할 필요가 없다
+
+—> 단순히 메소드를 호출하려면 구조체로 충분하다. 인터페이스는 공통 동작이 필요할 때만 도입하라.
+
+**이를 통해 추구하는 것**
+
+- 간결함, 유연성
+- 낮은 결합도 - 구조체와 인터페이스 결합을 최소화
+- 구체적 구현과 추상의 균형 - 구조체 사용과 인터페이스 추상화 사이의 균형
+- 낮은 진입 장벽 - 복잡한 객체 지향 패턴 대신 단순한 메서드 기반 설계 선호
