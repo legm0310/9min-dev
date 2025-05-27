@@ -87,7 +87,7 @@ export const Callout = ({ type = 'normal', title, children }: CalloutProps) => {
   return (
     <div
       className={clsx(
-        'flex items-center gap-3 my-6 px-5 py-4 rounded-md ',
+        'flex items-center gap-3 my-6 px-5 rounded-md ',
         calloutStyle[type],
       )}
     >
