@@ -19,7 +19,7 @@ description: ''
 - ecdsa도 내장되어있는 crypto 패키지의 Signer이라는 인터페이스를 따른다고 되어있다. 그러나 어디에도 해당 인터페이스를 따른다고 선언되어있는곳을 찾을 수 없었다
 - TS를 주로 해왔기때문에 구조체의 선언부를 습관적으로 찾아봤지만, go는 구조체를 할당할 때 인터페이스도 할당한다.
 
-```go showLineNumber title="interface 예제"
+```go showLineNumbers title="interface 예제"
 type IA interface {
     MethodA()
 }
@@ -40,7 +40,7 @@ func main() {
 
 **만약 아래처럼 구조체의 함수를 사용할 때 할당하면서 인터페이스의 구현을 확인하지 않는다면?**
 
-```go showLineNumber title="interface 예제"
+```go showLineNumbers title="interface 예제"
 type IA interface {
     MethodA()
 }
@@ -71,7 +71,7 @@ func main() {
   - 결과적으로 go 컴파일러는 인터페이스 요구사항을 충족하지 못하면 사용을 허락하지 않는다.
   - 아래과 같은 상황에서 만약 `ecdsa.GenerateKey` 의 리턴 값인 PrivateKey가 Sign을 구현하지 않았다면 컴파일러는 에러를 출력한다.
 
-    ```go showLineNumber title="ecdsa.go"
+    ```go showLineNumbers title="ecdsa.go"
     type Signer interface {
         Public() PublicKey
         Sign(rand io.Reader, digest []byte, opts SignerOpts) ([]byte, error)
