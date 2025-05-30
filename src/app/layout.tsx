@@ -7,7 +7,10 @@ import Toaster from '@/components/ui/Toaster';
 import QueryParamListener from '@/components/common/QueryParamListener';
 
 export const metadata: Metadata = {
-  title: '화기엄금',
+  icons: {
+    icon: '/icons/favicon_io/favicon.ico',
+  },
+  title: '이규민의 개발기행',
   description: '비밀창고',
 };
 
