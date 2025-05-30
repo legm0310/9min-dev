@@ -1,0 +1,530 @@
+---
+title: 'Artillery 활용 페이지네이션 성능 비교(Offset, Cursor)'
+date: '2025-05-27'
+category: 'development'
+tags: ['nest.js', 'artillery', 'pagination']
+thumbnail: '/contents/posts/development/paging-offset-cursor-artillery-performance/preview.jpg'
+description: ''
+---
+
+## 사용자 검색 페이징 처리
+
+사용자 검색 시 디바운싱을 활용해 검색 키워드 기반 사용자 조회 기능을 추가할 때 UX와 조회 성능을 위해 페이징 처리를 추가했다.
+페이지네이션은 많은 데이터를 나눠서 조회하는 기법이다.
+게시판을 예로 들면 페이지 당 10개의 게시물을 조회하고 다음 페이지로 넘어가게 되면 11 ~ 20번째 게시물이 조회된다.
+
+현재 프로젝트에서 페이지네이션은 첫 조회에 특정 수의 유저를 조회하고 이후 어느정도 스크롤하면 그 다음 유저 조회가 필요했다.
+
+---
+
+## 페이징 처리 비교
+
+<Callout type="info">
+  페이징 처리할 때 용도와 요구 성능에 따라 크게 두 가지로 나눠진다.
+</Callout>
+
+각 방식의 본질과 trade-off를 이해한 뒤, UX 목표에 맞춰 선택하여 프로젝트에 적용하기 위해 offset기반 페이지네이션과 cursor기반 페이지네이션을 비교했다.
+
+### offset 기반 페이지네이션
+
+`offset` 기반 페이지네이션은 `limit`을 정해놓은 후 `offset`이 n일때 데이터베이스가 내부적으로 n건을 스킵한 후 `limit`만큼 읽는다.
+
+#### 동작 흐름
+
+1. 클라이언트 -> 서버: `?limit=20&offset=100`
+2. DB 내부적으로 100건을 스캔(스킵) -> 다음 20건 반환
+3. 클라이언트는 다음 요청 시 `offset += limit`
+
+#### 장점과 단점
+
+- 장점:
+  - 구현이 단순하고 이해하기 쉽다.
+  - 임의 페이지를 바로 이동할 수 있다.
+- 단점:
+  - offset이 n일 때 내부적으로 n건 스캔 -> n이 커지면 응답 지연이 선형으로 증가
+  - 중간에 데이터 삽입 및 삭제가 일어나면 같은 offset에서 중복이나 누락이 발생할 수 있다.
+
+#### 사용 사례
+
+전통적인 웹페이지 '페이지 번호' UI, 게시판이나 블로그 목록, 백오피스 조회 등 임의 페이지에 직접 접근 필요할 때 사용
+
+```ts showLineNumbers title="offset 기반 페이지네이션 조회 코드"
+export class UserRepositoryAdapter {
+  ...
+
+  async searchUsersByEmailOrNickname(
+    keyword: string,
+    limit: number,
+    offset: number,
+  ): Promise<PagedSearchUsers> {
+    const rows = await this._userRepository
+      .createQueryBuilder('user')
+      .where('user.nickname LIKE :keyword', { keyword: `${keyword}%` })
+      .orWhere('user.email LIKE :keyword', { keyword: `${keyword}%` })
+      .orderBy('user.nickname', 'ASC')
+      .limit(limit)
+      .offset(offset)
+      .getMany();
+
+    const nextOffset = offset + limit;
+    const users = rows.map((user) => ({
+      id: user.id,
+      nickname: user.nickname,
+      email: user.email,
+    }));
+
+    return {
+      items: users,
+      limit,
+      marker: nextOffset,
+    };
+  }
+}
+
+```
+
+### cursor 기반 페이지네이션
+
+마지막으로 읽은 레코드의 키를 '커서'로 삼아 이후 데이터를 조회한다.
+다음 요청 시 이 커서를 서버로 전달하면, 데이터베이스에서 `WHERE key > :cursor` 조건으로 인덱스를 통해 다음 데이터를 조회한다.
+
+#### 동작 흐름
+
+1. 첫 요청: `?limit=20` -> 서버가 20건 반환 + `nextCursor` = 마지막 레코드의 키
+2. 다음 요청: `?limit=20&cursor=nextCursor` -> 데이터베이스에서 `WHERE key > cursor` 조건으로 20건 반환
+3. 클라이언트는 받은 새 커서로 이어서 조회
+
+#### 장점과 단점
+
+- 장점:
+  - 인덱스 범위 스캔 -> 일정한 응답 시간 보장
+  - 데이터 변경이 있어도 커서 이후만 조회 -> 일관성 높음
+  - 실시간 피드와 같이 이어 보기 UX에 최적화
+- 단점:
+  - 이전 페이지와 같이 임의의 페이지 바로가기가 복잡하다
+  - 클라이언트와 서버 양쪽에서 커서 상태 관리가 필요하다
+  - 커서와 정렬 기준이 다르면 부하가 생기거나 순서가 꼬일 수 있음
+
+#### 사용 사례
+
+소셜 피드, 무한 스크롤(페이스북, 인스타그램), 모바일 앱 더보기 버튼, 대용량 데이터 스트리밍 뷰 등에 사용
+
+#### 구현
+
+두 방법을 비교하기 위해 cursor 기반 페이지네이션을 구현에서 사용자 검색 후 닉네임 기준 오름차순으로 정렬하여 리턴했는데, 페이징 기준이 되는 커서와 정렬 기준이 충돌하여 다음 페이지가 제대로 조회되지 않는 문제가 생겼다.
+
+커서를 통한 필터링을 id값으로 하게 되었을때 정렬 기준이 닉네임이면, 이전 페이지에서 정렬되었던 레코드가 누락되거나, 이전에 이미 표시된 레코드가 중복되어 표시될 수 있다.
+
+예를 들어, 다음과 같은 데이터가 있다고 가정한다.
+
+| id  | nickname |
+| --- | -------- |
+| 10  | bob      |
+| 20  | anna     |
+| 30  | alex     |
+
+1. **정렬:** `ORDER BY nickname ASC`  
+   → 순서: `['alex'(30), 'anna'(20), 'bob'(10)]`
+2. **첫 페이지 (limit=2):**
+   - 반환: `['alex'(30), 'anna'(20)]`
+   - 커서(cursor) = 마지막 레코드의 `id` = `20`
+3. **두번째 페이지 (`?limit=2&cursor=20`):**
+   - 필터: `WHERE id > 20` → 남는 레코드 = `['alex'(30)]`
+   - 정렬: `ORDER BY nickname ASC` → `['alex'(30)]`
+
+결과적으로 `alex` (id=30)는 첫번째, 두번째 페이지에 중복되어 표시된다.
+
+이처럼 커서 필드와 정렬 컬럼이 다르면 `id > cursor` 조건에 걸리는 레코드가 정렬 기준상 이전 페이지에 있었더라도 다시 조회되어 중복이 발생할 수 있다.
+누락의 경우에도 정렬과 페이지 필터링의 기준이 달라 비슷한 경우로 누락이 발생한다.
+
+이를 해결하기 위해, 기존에 id로 사용하던 커서를 닉네임으로 변경하여 정렬 기준과 동일하게 변경한 후, 페이징 결과 인터페이스를 추상화 했다.
+오프셋 기반 페이징은 오프셋은 숫자 타입으로 들어오기 떄문에 타입 별칭을 미리 생성해두고 커서 기반 페이징은 `PageResult` 인터페이스의 제네릭을 통해 타입을 받아온다.
+
+```ts showLineNumbers
+/**
+ * 페이징 처리
+ * @template T items 타입
+ * @template M 페이징 키 타입 , 키 = offset, cursor ...
+ */
+export interface PageResult<T, M> {
+  items: T[];
+  limit: number;
+  //다음 페이지 키
+  marker: M;
+}
+
+//오프셋 전용
+export type OffsetPageResult<T> = PageResult<T, number>;
+
+...
+
+// read-model
+export type PagedSearchUsers = OffsetPageResult<UserSummary>;
+
+export type PagedCursorBaseSearchUsers = PageResult<UserSummary, string>;
+
+...
+
+//repository
+export class UserRepositoryAdapter {
+
+  async searchUserByEmailOrNicknameWithCursor(
+    keyword: string,
+    limit: number,
+    cursor: string,
+  ): Promise<PagedCursorBaseSearchUsers> {
+    console.log(typeof cursor, cursor);
+    const rows = await this._userRepository
+      .createQueryBuilder('user')
+      .where('(user.nickname LIKE :keyword OR user.email LIKE :keyword)', {
+        keyword: `${keyword}%`,
+      })
+      .andWhere(cursor.length > 0 ? 'user.nickname > :cursor' : '1=1', {
+        cursor,
+      })
+      .orderBy('user.nickname', 'ASC')
+      .limit(limit)
+      .getMany();
+
+    const nextCursor = rows.length ? rows[rows.length - 1].nickname : undefined;
+    const users = rows.map((user) => ({
+      id: user.id,
+      nickname: user.nickname,
+      email: user.email,
+    }));
+
+    return {
+      items: users,
+      limit,
+      marker: nextCursor,
+    };
+  }
+}
+```
+
+위와 같이 추상화된 인터페이스를 통해 구현 후 테스트 결과, 닉네임에 포함된 숫자가 제대로 정렬되지 않았다.
+
+![postman 요청 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/cursor-result.png)
+
+닉네임이 문자 + 숫자 조합이기 때문에 사전식 오름차순으로 정렬 시 숫자 정렬이 문제가 된다.
+숫자까지 완벽하게 정렬하기 위한 방법으로 여러가지가 있지만, 많은 방법들 중 가상 컬럼을 생성하지 않고 패딩을 쓰지 않는 방법 중에 **정규식으로 숫자 부분만 뽑아서 CAST**하는 방식을 생각했다.
+
+```ts showLineNumbers title="searchUsersByNicknameCursor"
+// 1) 사용자가 넘긴 cursor 토큰(=마지막 nickname)에서 순수 숫자 부분
+const lastNick = cursor ?? '';
+const lastNum = lastNick
+  ? parseInt(lastNick.slice(lastNick.search(/\d/)), 10)
+  : 0;
+
+// 2) 첫 숫자 등장 위치 탐색
+const numPosExpr = `REGEXP_INSTR(user.nickname, '[0-9]')`;
+
+// 3) 첫 숫자부터 끝까지 뽑아서 정수로 CAST 하는 식
+const numExpr = `CAST(SUBSTRING(user.nickname, ${numPosExpr}) AS UNSIGNED)`;
+
+// 4) QueryBuilder 구성
+const qb = this._userRepository
+  .createQueryBuilder('user')
+  .where('user.nickname LIKE :kw', { kw: `${keyword}%` });
+
+// 5) 커서가 있으면, 숫자 기준 + 문자열 기준으로 복합 필터
+if (cursor) {
+  qb.andWhere(
+    `
+      (${numExpr} > :lastNum)
+      OR (
+        ${numExpr} = :lastNum
+        AND user.nickname > :lastNick
+      )
+    `,
+    {
+      lastNum,
+      lastNick,
+    },
+  );
+}
+
+qb.orderBy(numExpr, 'ASC').addOrderBy('user.nickname', 'ASC').limit(limit);
+return {
+  items: rows.map((u) => ({
+    id: u.id,
+    nickname: u.nickname,
+    email: u.email,
+  })),
+  limit,
+  nextCursor,
+};
+```
+
+위의 방식은 비교적 비용이 큰 연산들이 추가된다.
+아래의 결과를 보면 포스트맨으로 요청만 보내봐도 응답 지연 차이가 눈에 띄게 차이난다.
+![기존 닉네임 사전적 오름차순 정렬 기반 쿼리(15ms)](/contents/posts/development/paging-offset-cursor-artillery-performance/before-query.png)
+
+![숫자 정렬 추가 쿼리(463ms)](/contents/posts/development/paging-offset-cursor-artillery-performance/after-sort-query.png)
+
+사실 닉네임의 문자가 같은데 숫자가 다른경우가 빈번한 경우가 아니기 때문에 숫자는 크게 영향이 없다.
+그렇기 때문에, 다른 방법을 사용하더라도 추후 Artillery를 통해 응답 지연시간을 체크하여 부하가 테스트 후 절충안을 도입해야한다.
+
+---
+
+## Artillery 개요
+
+offset기반 페이지네이션을 cursor기반 페이지네이션과 비교 했을 때 발생하는 응답 지연시간 차이를 측정하기 위해 Artillery를 사용했다.
+
+> offset을 사용할 경우 데이터가 늘어날수록 응답 지연이 선형적으로 증가한다.
+
+Artillery는 node.js를 기반의 오픈소스 부하 테스트 및 스트레스 테스트 도구다. YAML, JavaScript, TypeScript 등을 사용해서 테스트 스크립트를 정의한다.
+또한 JavaScript, TypeScript로 훅이나 사용자 정의 함수를 작성해서 테스트 스크립트에 추가하여 복잡한 로직도 처리할 수 있다.
+
+```yaml showLineNumbers title="시나리오 예제"
+config:
+  target: 'https://api.example.com'
+  phases:
+    - duration: 60 # 테스트 지속 시간 (초)
+      arrivalRate: 10 # 초당 시뮬레이트할 가상 사용자 수
+scenarios:
+  - flow:
+      - get:
+          url: '/v1/users'
+      - post:
+          url: '/v1/users'
+          json:
+            name: 'Alice'
+            email: 'a@example.com'
+```
+
+#### config 옵션
+
+- **phases**
+  - **duration**: 단계 지속 시간을 초 단위 또는 사람이 읽을 수 있는 형식으로 지정
+  - **name**: cli 로그, cloud 대시보드에서 단계를 쉽게 식별할 수 있도록 이름 지정
+  - **maxVusers**: 모든 단계의 총 가상 유저 수 제한 (vu = virtual user)
+  - **arrivalRate**: 초당 생성할 vu 수
+  - **rampTo**: duration동안 arrivalRate를 rampTo에 정의된 수 까지 늘린다.
+  - **arrivalCount**: 한 단계에 생성할 총 vu 수 (총 duration 시간에 따라 균등 분배 생성)
+
+#### 커스텀 스크립팅
+
+테스트 전후 훅(`before`, `after`)이나 각 요청 전후(`beforeRequest`, `afterResponse`)에 JavaScript 실행 가능
+예: 로그인 토큰 생성 -> 이후 모든 요청에 헤더 자동 추가
+
+#### 리포팅
+
+콘솔 요약, HTML 리포트, JSON 결과 출력, CI/CD 파이프라인에 통합해 지속적인 성능 모니터링 가능
+
+#### 기본 사용 방법
+
+- 단일 실행
+
+```bash
+artillery run artillery.yml
+```
+
+- 보고서 생성
+
+```bash
+artillery run --output report.json user-search.yaml
+
+# Artillery Cloud, 테스트 결과가 생성됨 https://app.artillery.io/
+artillery run user-search.yaml --name "test-name" --scenario-name=scenario --record --key my_api_key
+
+# 아래의 명령어는 DEPRECATE 됨
+# artillery report --output report.html report.json
+```
+
+- 단순 벤치마크
+
+```bash
+artillery quick --count 20 -n 50 https://example.com/
+# 20명의 사용자가 각각 50개의 GET 요청
+```
+
+---
+
+## 페이징 처리 성능 비교
+
+현재 테스트는 사용자 검색 시 페이징 처리에 대한 테스트로, 한 사용자가 반복해서 무한 스크롤하여 검색 요청을 보내야하기 때문에 루프를 도는 시나리오를 작성했다.
+
+위의 artillery 개요와 같이 yaml파일로 테스트 스크립트를 작성하고 전 후처리를 위해 사용자 정의 함수를 타입스크립트로 구현했다.
+
+사용자 한명 당 1~2초 간격으로 50번의 무한 스크롤하는 시나리오로 테스트를 진행했다. 1회 조회 시 20개의 레코드를 가져오는 테스트로 50번 진행할 시 마지막 조회 시 1000개의 레코드를 스킵해야한다.
+
+아래의 테스트 스크립트를 베이스로 phases의 vuser수는 테스트마다 유동적으로 변경했다.
+
+```yaml showLineNumbers title="user-search.yaml"
+config:
+  target: 'http://localhost:8000'
+  http:
+    timeout: 15
+  phases:
+    # 첫 테스트, 이후 유동적으로 변경
+    - name: Warm-up
+      duration: 20
+      maxVusers: 100
+      arrivalCount: 100
+
+    - name: Burst
+      duration: 15
+      maxVusers: 500
+      arrivalCount: 400
+
+    - name: Cool-down
+    - pause: 30
+
+  processor: './scripts/user-search-processor.ts'
+
+scenarios:
+  - name: offset-pagination
+    flow:
+      - loop:
+          - function: generateOffsetParams
+          - get:
+              url: '/api/user/search?keyword={{ keyword }}&offset={{ offset }}&limit=20'
+          - think: 1
+        count: 50
+
+  - name: cursor-pagination
+    flow:
+      - loop:
+          - function: generateCursorParams
+          - get:
+              url: '/api/user/search/cursor?keyword={{ keyword }}&cursor={{ cursor }}&limit=20'
+              afterResponse: captureNextCursor
+          - think: 1
+        count: 50
+```
+
+```ts showLineNumbers title="user-search-processor.ts"
+import { ActionFn, AfterResponseFn, BeforeScenarioFn } from 'artillery';
+
+export const generateOffsetParams: ActionFn = (ctx, events, done) => {
+  ctx.vars.keyword = 'test';
+  const offsetNum = Number(ctx.vars.offset ?? 0);
+  ctx.vars.offset = offsetNum + 20;
+  done();
+};
+
+export const generateCursorParams: BeforeScenarioFn = (ctx, events, done) => {
+  ctx.vars.keyword = 'test';
+  done();
+};
+
+export const captureNextCursor: AfterResponseFn = (
+  reqParam,
+  res,
+  ctx,
+  ee,
+  next,
+) => {
+  if (typeof res.body === 'string') {
+    const body = JSON.parse(res.body);
+    ctx.vars.cursor = body.payload.data.cursor;
+  }
+  next();
+};
+```
+
+<br />
+
+### 테스트 1 - vuser 500
+
+- 총 vuser 수 500
+  - **단계 1**: 20s 동안 vuser 100 생성
+  - **단계 2**: 15s 동안 vuser 400 생성
+- vuser 1 당 2초 간격으로 50번의 무한 스크롤
+
+500명의 사용자가 50번의 무한스크롤을 할 경우, 평균적적으로 7ms로 차이가 없었다.
+최대 지연시간은 오히려 offset 기반 페이징보다 cursor 기반 페이징이 504ms로 응답이 더 지연됐다.
+
+![offset-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/offset-test-500.png)
+
+![cursor-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/cursor-test-500.png)
+
+유의미한 차이를 확인하기에는 사용자나 스크롤수가 적다고 판단하여, vuser와 count를 늘려 테스트를 진행했다.
+
+### 테스트 2 - vuser 1500
+
+- 총 vuser 수 1500
+  - **단계 1**: 10s 동안 vuser 500 생성
+  - **단계 2**: 15s sustain 15s
+  - **단계 3**: 10s 동안 vuser 500 생성
+  - **단계 4**: 10s 동안 vuser 500 생성
+- vuser 당 1초 간격으로 50번 무한 스크롤
+
+vuser를 1500으로 늘리니 평균값에서 조금씩 차이를 보이기 시작했다.
+
+{/* prettier-ignore */}
+<Callout type="info">
+  offset 기반의 평균 지연시간 25ms, cursor 기반 평균 지연시간 18ms
+</Callout>
+
+미미한 차이지만 비율로 따지면 28% 차이로 cursor기반 페이징이 응답 지연시간이 빨랐다.
+
+최대 지연시간은 offset 기반 684ms, cursor 기반 815ms로 cursor 기반이 더 느리게 나왔다.
+그러나 최대 지연시간을 제외한 백분위수를 보면 전체적으로 cursor기반 페이징이 지연시간이 빠른걸 볼 수 있다.
+
+![offset-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/offset-test-1500.png)
+
+![cursor-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/cursor-test-1500.png)
+
+### 테스트 3 - vuser 3000
+
+- 총 vuser 수 3000
+  - **단계 1**: 10s 동안 vuser 1000 생성
+  - **단계 2**: 10s 동안 vuser 1000 생성
+  - **단계 3**: 10s 동안 vuser 1000 생성
+- vuser 당 1초 간격으로 50번 무한 스크롤
+
+vuser 3000까지 올려 테스트하니 눈에 띄는 차이를 보였다.
+
+{/* prettier-ignore */}
+<Callout type="info">
+  offset 기반 평균 지연시간 1300ms, cursor 기반 평균 지연시간 524ms
+</Callout>
+
+평균 지연시간이 두 배 이상 차이를 보였다.
+최대 지연시간도 offset 기반 페이징은 5100ms, cursor 기반 페이징은 2200ms로 **두 배 이상** 차이 났다.
+다른 백분위수도 비슷한 양상의 차이를 보였고, 평균 초당 요청 처리수도 cursor 기반이 **약 40%** 가량 높았다.
+
+![offset-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/offset-test-3000.png)
+
+![cursor-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/cursor-test-3000.png)
+
+### 테스트 4 - vuser 500, count 200
+
+테스트 1과 동일하게 진행하되, 무한 스크롤 수 200회로 증가
+
+- 총 vuser 수 500
+  - **단계 1**: 20s 동안 vuser 100 생성
+  - **단계 2**: 15s 동안 vuser 400 생성
+- vuser 1 당 2초 간격으로 200번의 무한 스크롤
+
+테스트 1에서 사용자를 늘린 것과 비교 했을때 테스트 4가 평균 지연시간에서 가장 큰 차이를 보였다
+
+{/* prettier-ignore */}
+<Callout type="info">
+  offset 기반 평균 지연시간 69ms , cursor 기반 평균 지연시간 24ms
+</Callout>
+
+offset 수가 늘어났을 때 평균 지연시간에서 **약 3배 가량**으로 가장 큰 차이를 보였다.
+그에 비해 최대 지연시간에서는 1600ms, 1000ms로 0.5배로 비교적 적은 차이를 보였다.
+
+![offset-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/offset-test-500-scroll-200.png)
+
+![cursor-pagination 테스트 결과](/contents/posts/development/paging-offset-cursor-artillery-performance/cursor-test-500-scroll-200.png)
+
+---
+
+## 결과 및 정리
+
+offset 기반 페이지네이션과 cursor 기반 페이지네이션을 비교 했을떄 offset이 커져감에 따라 성능 차이가 난다는 사실은 널리 알려져 있다.
+사실 현재 상황에서 어렵지 않게 cursor 기반 페이지네이션을 도입하면 된다.
+하지만 나의 유즈케이스에서 성능 차이가 나는 병목 시점을 알 수 있다면, 비슷한 상황에서 cursor 기반 페이지네이션 구현에 리소스를 낭비하지 않고 offset을 도입할 수 있다고 생각했다.
+
+물론 두 페이징 기법이 유즈케이스마다 다르게 선택되기는 하지만, 방법론에 있어서 내가 더 유연한 선택을 하기를 원한다. ~그리고 그냥 궁금했다.~
+
+결과적으로 다음과 같이 정리한다
+
+1. 사용자가 늘어난 것보다 offset이 커졌을 때 두 방법에서 더 큰 응답 지연 차이를 보였다.
+2. 평균 지연시간 기준, 50회 스크롤할 시 사용자 500명일 때는 아예 차이가 없었으나, 1500명부터 28%의 성능 차이를 보였고 3000명일 때는 241%의 차이를 보였다.
+3. 사용자가 **6배 늘어났을때**는 241%의 차이를 보였는데, offset이 **4배 늘어났을때** 287%로 비교적 큰 폭으로 지연시간이 늘어났다
