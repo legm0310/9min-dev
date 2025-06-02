@@ -1,11 +1,13 @@
 import Banner from '@/components/common/Banner';
-import RecentPostList from '@/components/posts/list/RecentPostList';
+import Profile from '@/components/common/Profile';
+import LatestPostList from '@/components/posts/list/LatestPostList';
 
 export default async function Home() {
   return (
     <div>
       <Banner />
-      <RecentPostList />
+      <Profile />
+      <LatestPostList />
     </div>
   );
 }
