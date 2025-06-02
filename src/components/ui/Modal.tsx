@@ -1,5 +1,6 @@
 'use client';
 
+import { createPortal } from 'react-dom';
 import { useRef, useEffect, ReactNode } from 'react';
 
 interface ModalProps {
@@ -37,7 +38,7 @@ const Modal = ({ open, onClose, children }: ModalProps) => {
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-center">
       <div
         ref={modalRef}
@@ -45,7 +46,8 @@ const Modal = ({ open, onClose, children }: ModalProps) => {
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
