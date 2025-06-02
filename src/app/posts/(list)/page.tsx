@@ -17,7 +17,7 @@ const PostList = async ({ params }: PostListProps) => {
   return (
     <section className="mt-16">
       <CategoryFilter curCategory={category} />
-      <PostCardList posts={posts} />
+      <PostCardList posts={posts} className="list-grid-2col mt-10" />
     </section>
   );
 };

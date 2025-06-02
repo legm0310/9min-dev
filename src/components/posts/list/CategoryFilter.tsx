@@ -8,7 +8,7 @@ interface CategoryFilterProps {
 const CategoryFilter = ({ curCategory }: CategoryFilterProps) => {
   const categories = categoryList;
   return (
-    <div className="mb-10">
+    <div>
       <div className="section-heading-semibold">
         {curCategory ? getCategoryLabel(curCategory) : 'Everything'}
       </div>

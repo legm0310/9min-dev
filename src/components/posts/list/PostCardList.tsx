@@ -7,18 +7,16 @@ interface PostCardListProps {
 }
 
 const PostCardList = ({ posts, className = '' }: PostCardListProps) => {
-  const hasPost = posts.length === 0 ? false : true;
-
-  return hasPost ? (
-    <ul className={`list-grid-2col list-none ${className}`}>
-      {posts.map((post) => (
-        <li key={`${post.category}/${post.slug}`}>
-          <PostCard postInfo={post} />
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <h3>업로드된 게시물이 없습니다..</h3>
+  return (
+    <div>
+      <ul className={`list-none ${className}`}>
+        {posts.map((post) => (
+          <li key={`${post.category}/${post.slug}`}>
+            <PostCard postInfo={post} />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
