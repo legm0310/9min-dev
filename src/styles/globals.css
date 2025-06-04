@@ -53,20 +53,24 @@
     @apply text-sm md:text-lg font-semibold common-letter-spacing leading-tight;
   }
 
-  .list-grid-only-col1 {
-    @apply grid grid-cols-1 gap-6 items-stretch;
+  .list-grid-1col {
+    @apply grid grid-cols-1 items-stretch;
   }
 
   .list-grid-2col {
-    @apply grid grid-cols-1 gap-6 items-stretch md:grid-cols-2;
+    @apply grid grid-cols-1 gap-8 items-stretch sm:grid-cols-2;
+  }
+
+  .list-grid-3col {
+    @apply grid grid-cols-1 gap-8 items-stretch sm:grid-cols-2 md:grid-cols-3 md:gap-8;
   }
 
   .list-grid-4col {
-    @apply grid grid-cols-1 gap-6 items-stretch sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+    @apply grid grid-cols-1 gap-8 items-stretch sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-4;
   }
 
   .tag-pill {
-    @apply px-2 py-1 text-sm font-medium border rounded-lg text-muted-foreground border-muted bg-muted;
+    @apply px-2 py-1 text-xs md:text-sm font-medium border rounded-lg text-muted-foreground border-muted bg-muted;
   }
 
   .tag-pill:hover {
@@ -133,6 +137,8 @@
   --surface-foreground: 0 0% 0%;
 
   --border: 0 0% 0%;
+  --border-subtle: 210 20% 91%;
+
   --overlay: 0 0% 0%;
 
   --codeblock-title-bg: 220 9% 28%;
@@ -187,6 +193,8 @@
   --surface-foreground: 0 0% 0%;
 
   --border: 0 0% 0%;
+  --border-subtle: 215 14% 34%;
+
   --overlay: 0 0% 0%;
 
   --codeblock-title-bg: 220 13% 18%;

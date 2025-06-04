@@ -98,7 +98,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--surface))',
           foreground: 'hsl(var(--surface-foreground))',
         },
-        border: 'hsl(var(--border))',
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+          subtle: 'hsl(var(--border-subtle))',
+        },
         overlay: 'hsl(var(--overlay))',
         //todo remove
         'codeblock-title': {
