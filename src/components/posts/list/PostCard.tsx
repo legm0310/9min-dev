@@ -36,11 +36,11 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
     return (
       <Link
         href={`${postInfo.url}`}
-        className="py-6 flex flex-col border-b border-b-border-subtle hover:shadow-lg hover:pl-1"
+        className="group py-6 flex flex-col border-b border-b-border-subtle transition-[padding,box-shadow] duration-300 hover:shadow-md hover:pl-2"
       >
         <Category name={label} className="mb-4 text-primary md:text-lg" />
         <div className="flex flex-row gap-x-8">
-          <div className="flex flex-col w-full sm:basis-3/4">
+          <div className="flex flex-col basis-full sm:basis-3/4">
             <h2 className={`line-clamp-2 ${cardTitleClass}`}>
               {postInfo.title}
             </h2>
@@ -61,12 +61,12 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
             </div>
           </div>
           <div
-            className={`hidden sm:flex sm:basis-1/4 w-52 h-[5.625rem] justify-center items-start`}
+            className={`hidden sm:flex w-52 h-full md:flex-shrink-0 overflow-hidden rounded-md`}
           >
             <Thumbnail
               src={postInfo.thumbnail}
               alt={postInfo.title}
-              className="rounded-md"
+              className="transform transition-transform duration-300 group-hover:scale-110"
             />
           </div>
         </div>
@@ -76,13 +76,15 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
     return (
       <Link
         href={`${postInfo.url}`}
-        className="h-full flex flex-col flex-1 rounded-md hover:shadow-lg"
+        className="group h-full flex flex-col flex-1 rounded-md transition-[padding,box-shadow] duration-300 hover:shadow-lg"
       >
-        <Thumbnail
-          src={postInfo.thumbnail}
-          alt={postInfo.title}
-          className="rounded-t-md"
-        />
+        <div className="overflow-hidden rounded-t-md">
+          <Thumbnail
+            src={postInfo.thumbnail}
+            alt={postInfo.title}
+            className="transform transition-transform duration-300 group-hover:scale-110"
+          />
+        </div>
 
         <div className="flex flex-col flex-1 p-2">
           <Category
