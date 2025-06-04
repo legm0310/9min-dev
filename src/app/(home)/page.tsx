@@ -5,9 +5,9 @@ import LatestPostList from '@/components/posts/list/LatestPostList';
 export default async function Home() {
   return (
     <div>
-      <Banner />
-      <Profile />
-      <LatestPostList />
+      <Banner className="my-20" />
+      <Profile className="mb-20" />
+      <LatestPostList className="mb-10" />
     </div>
   );
 }
