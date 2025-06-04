@@ -36,11 +36,11 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
     return (
       <Link
         href={`${postInfo.url}`}
-        className="py-6 flex text- flex-col border-b border-b-border-subtle hover:shadow-lg hover:pl-1"
+        className="py-6 flex flex-col border-b border-b-border-subtle hover:shadow-lg hover:pl-1"
       >
         <Category name={label} className="mb-4 text-primary md:text-lg" />
         <div className="flex flex-row gap-x-8">
-          <div className="flex flex-col w-3/4">
+          <div className="flex flex-col w-full sm:basis-3/4">
             <h2 className={`line-clamp-2 ${cardTitleClass}`}>
               {postInfo.title}
             </h2>
@@ -60,7 +60,9 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
               </div>
             </div>
           </div>
-          <div className="w-52 h-[5.625rem] justify-center items-center">
+          <div
+            className={`hidden sm:flex sm:basis-1/4 w-52 h-[5.625rem] justify-center items-start`}
+          >
             <Thumbnail
               src={postInfo.thumbnail}
               alt={postInfo.title}
