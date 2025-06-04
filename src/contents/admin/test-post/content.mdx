@@ -1,0 +1,48 @@
+---
+title: '테스트 게시물의 타이틀입니다.'
+date: '2025-04-17'
+category: 'admin'
+tags: ['test', 'mdx', 'blog', 'build']
+thumbnail: '/contents/posts/admin/test-post/preview.jpg'
+---
+
+## 작성할 포스트 주제 목록
+
+#### 언어 설계 및 리플렉트와 직렬화
+
+- 직렬화 할 때 메소드와 비공개 필드들은 제거된다. 그 과정은 리플렉트 단계에서 처리되어, 비공개 필드 및 메소드는 제거되고 공개 필드만이 직렬화 된다.
+- 리플렉트란 런타임에 변수, 값의 타입과 값을 동적으로 조사하거나 조작할 수 있는 메커니즘을 말한다.
+- Go언어의 접근제어와 직렬화 및 리플렉션 간 상관 관계를 게시글로 정리하자
+
+      encoding/json과 대문자(Exported) 필드 관계
+      •	Go 언어 자체에는 “exported vs unexported” 규칙이 있습니다. 즉, 패키지 외부에서 접근 가능한 이름은 첫 글자가 대문자이고(Exported), 패키지 내부에서만 접근 가능한 이름은 첫 글자가 소문자(Unexported)입니다.
+      •	encoding/json 패키지는 내부적으로 리플렉션을 사용해서 struct의 필드를 읽어들입니다. 하지만 Go의 리플렉션 규칙에 따르면, unexported(소문자) 필드는 외부 패키지에서 접근이 금지되어 있기 때문에 reflect.Value.Field() 같은 호출로도 읽을 수 없습니다.
+      •	결과적으로 encoding/json.Marshal은 “exported”된 필드(첫 글자가 대문자이고, json:"..." 태그가 붙은 경우)를 찾아서 JSON 키-값 쌍으로 직렬화하고, 소문자로 선언된 필드는 아예 무시하게 됩니다.
+
+  따라서 1. encoding/json이 “대문자 필드만 인식하도록 특별히 설계했다기보다는, 2. 리플렉션이 Go의 visibility(가시성) 규칙을 따르기 때문에 unexported 필드를 읽을 수 없고, 결과적으로 JSON으로 직렬화되지 않는 것뿐입니다.
+  다른 말로 하면, “JSON 직렬화를 위해 반드시 대문자로 선언해야 한다”는 제약은 encoding/json 자체가 ‘private 필드는 절대 안 내보낸다’고 강제한 게 아니라, Go의 리플렉션 메커니즘이 ‘unexported 필드는 접근 자체가 불가능’하므로 자연스럽게 생긴 결과입니다.
+
+- go에서는 reflect패키지를 통해 다음을 할 수 있다
+  - 타입 정보 읽기: 어떤 변수가 int, string, struct, slice 등 어떤 타입인지 확인한다.
+  - 값 읽기/쓰기: 변수의 값을 인터페이스(interface{}) 형태로 받아와서, 실행 중에 타입을 판단하고 다시 값으로 꺼내거나, 변경할 수도 있다(물론 export된 필드에 한해).
+  - 구조체 필드/메서드 탐색: struct 타입이라면 필드 목록을 순회하거나, 메서드를 호출할 수도 있다.
+
+```go showLineNumbers
+
+import "reflect"
+
+func printFields(x interface{}) {
+    v := reflect.ValueOf(x)               // 값(value) 얻기
+    t := v.Type()                         // 타입(type) 얻기
+    if t.Kind() != reflect.Struct {
+        fmt.Println("구조체가 아닙니다.")
+        return
+    }
+    for i := 0; i < t.NumField(); i++ {
+        field := t.Field(i)               // 필드 메타데이터 (reflect.StructField)
+        val := v.Field(i)                 // 필드 값 (reflect.Value)
+        fmt.Printf("필드명: %s, 값: %v\n", field.Name, val.Interface())
+    }
+}
+
+```
