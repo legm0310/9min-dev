@@ -17,14 +17,14 @@ const CategoryFilter = ({ curCategory }: CategoryFilterProps) => {
           key={'all'}
           name={'All Posts'}
           href={`/posts`}
-          className={`hover:underline ${curCategory ? `text-muted-foreground` : `text-primary`}`}
+          className={`my-1 hover:underline ${curCategory ? `text-muted-foreground` : `text-primary`}`}
         />
         {categories.map((category) => (
           <Category
             key={category.key}
             name={category.label}
             href={`/posts/${category.key}`}
-            className={`hover:underline ${curCategory && curCategory === category.key ? `text-primary` : `text-muted-foreground`}`}
+            className={`my-1 hover:underline ${curCategory && curCategory === category.key ? `text-primary` : `text-muted-foreground`}`}
           />
         ))}
       </div>

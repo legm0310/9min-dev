@@ -40,7 +40,7 @@ const Lock = () => {
 
   return (
     <div>
-      <Button onClick={handleClick} className="group">
+      <Button onClick={handleClick} className="px-1 md:px-1 py-1 group">
         <LockIcon open={!!isUnlocked} />
       </Button>
       <UnlockModal

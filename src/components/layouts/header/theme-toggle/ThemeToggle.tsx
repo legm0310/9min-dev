@@ -17,7 +17,7 @@ const ThemeToggle = () => {
   return (
     <Button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="group"
+      className="px-1 md:px-1 py-1 group"
     >
       {theme === 'dark' ? <DarkIcon /> : <LightIcon />}
     </Button>
