@@ -8,7 +8,9 @@ interface ThumbnailProps {
 
 const Thumbnail = ({ src, alt = '', className = '' }: ThumbnailProps) => {
   return (
-    <div className={`relative aspect-video w-full`}>
+    <div
+      className={`relative aspect-video w-full overflow-hidden ${className}`}
+    >
       <Image
         src={src}
         alt={alt}
@@ -16,7 +18,7 @@ const Thumbnail = ({ src, alt = '', className = '' }: ThumbnailProps) => {
         priority
         sizes="(max-width: 1000px) 50vw, 450px"
         style={{ objectFit: 'cover' }}
-        className={`${className}`}
+        // className={`${className}`}
       />
     </div>
   );
