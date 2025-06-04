@@ -19,15 +19,23 @@ const PostCardList = ({
     4: 'list-grid-4col',
   }[columns];
 
+  const hasPost = posts.length === 0 ? false : true;
+
   return (
     <div>
-      <ul className={`list-none ${gridColsMap} ${className}`}>
-        {posts.map((post) => (
-          <li key={`${post.category}/${post.slug}`}>
-            <PostCard postInfo={post} columns={columns} />
-          </li>
-        ))}
-      </ul>
+      {hasPost ? (
+        <ul className={`list-none ${gridColsMap} ${className}`}>
+          {posts.map((post) => (
+            <li key={`${post.category}/${post.slug}`}>
+              <PostCard postInfo={post} columns={columns} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-10">
+          <h3 className="text-center">🔖 업로드된 게시물이 없습니다..</h3>
+        </div>
+      )}
     </div>
   );
 };

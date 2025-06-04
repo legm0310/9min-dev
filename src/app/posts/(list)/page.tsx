@@ -14,10 +14,11 @@ const PostList = async ({ params }: PostListProps) => {
   if (!category) {
     posts = posts.filter((post) => post.category !== 'admin');
   }
+
   return (
     <section className="mt-16">
       <CategoryFilter curCategory={category} />
-      <PostCardList posts={posts} className="list-grid-2col mt-10" />
+      <PostCardList posts={posts} columns={2} className="mt-12" />
     </section>
   );
 };

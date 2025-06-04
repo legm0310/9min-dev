@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import Category from '@/components/ui/Category';
 import Tag from '@/components/ui/Tag';
 import { getCategoryLabel } from '@/lib/post';
@@ -69,7 +68,7 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
         </div>
       </Link>
     );
-  } else if (columns === 2 || columns === 3 || columns === 4) {
+  } else {
     return (
       <Link
         href={`${postInfo.url}`}
