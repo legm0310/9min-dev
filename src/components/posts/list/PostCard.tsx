@@ -23,18 +23,20 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
     4: 'text-base md:text-lg',
   }[columns];
 
-  const cardCategory = {
+  const cardCategoryClass = {
     1: 'text-base md:text-lg',
     2: 'text-sm md:text-base',
     3: 'text-sm md:text-base',
     4: 'text-sm md:text-base',
   }[columns];
 
+  const tagVisibilityClass = columns === 4 ? 'overflow-hidden' : 'flex-wrap';
+
   if (columns === 1) {
     return (
       <Link
         href={`${postInfo.url}`}
-        className="py-6 flex text- flex-col border-b border-b-border-subtle hover:shadow-lg"
+        className="py-6 flex text- flex-col border-b border-b-border-subtle hover:shadow-lg hover:pl-1"
       >
         <Category name={label} className="mb-4 text-primary md:text-lg" />
         <div className="flex flex-row gap-x-8">
@@ -81,11 +83,14 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
         />
 
         <div className="flex flex-col flex-1 p-2">
-          <Category name={label} className={`text-primary ${cardCategory}`} />
+          <Category
+            name={label}
+            className={`text-primary ${cardCategoryClass}`}
+          />
           <h2 className={`my-1 line-clamp-2 ${cardTitleClass}`}>
             {postInfo.title}
           </h2>
-          <div className="my-2 line-clamp-2 flex gap-1.5">
+          <div className={`my-2 flex gap-1.5 ${tagVisibilityClass}`}>
             {postInfo.tags.length > 0 ? (
               postInfo.tags.map((tag) => <Tag key={tag} name={tag} />)
             ) : (
