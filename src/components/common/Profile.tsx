@@ -4,15 +4,13 @@ import GithubIcon from './icon/GithubIcon';
 import Button from '../ui/Button';
 import Image from 'next/image';
 import avatarImage from '/public/images/profile/avatar1.jpg';
+import ToastButton from '../ui/ToastButton';
 
 interface ProfileProps {
   className?: string;
 }
 
 const Profile = ({ className = '' }: ProfileProps) => {
-  const layoutClasses = '';
-  const innerClasses = '';
-
   return (
     <section
       className={`flex flex-col items-center md:items-start ${className}`}
@@ -72,11 +70,19 @@ const Profile = ({ className = '' }: ProfileProps) => {
       </div>
 
       {/*------------------- more about me --------------------*/}
-      <Link href={'/about'} className="self-center md:self-start">
+      <ToastButton
+        message="준비 중입니다 🚀"
+        className="self-center md:self-start"
+      >
         <span className="p-2 underline text-muted-foreground hover:text-foreground">
           More About me -{'>'}
         </span>
-      </Link>
+      </ToastButton>
+      {/* <Link href={'/about'} className="self-center md:self-start">
+        <span className="p-2 underline text-muted-foreground hover:text-foreground">
+          More About me -{'>'}
+        </span>
+      </Link> */}
     </section>
   );
 };
