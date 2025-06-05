@@ -24,7 +24,7 @@ const LockIcon = ({ open }: LockIconProps) => {
   return (
     <div
       onClick={handleClick}
-      className={`w-5 md:w-6 h-5 md:h-6 transition-transform duration-300 text-[color:var(--nav-stroke)] ${isAnimating ? 'rotate-45' : 'group-hover:rotate-12 group-hover:scale-110'}
+      className={`w-5 md:w-6 h-5 md:h-6 transition-transform duration-200 text-[color:var(--nav-stroke)] ${isAnimating ? 'rotate-45' : 'group-hover:rotate-12 group-hover:scale-110'}
       `}
     >
       <svg
