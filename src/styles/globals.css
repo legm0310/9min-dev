@@ -50,7 +50,10 @@
     @apply text-3xl md:text-4xl font-semibold common-letter-spacing leading-tight;
   }
   .menu-item {
-    @apply text-sm md:text-lg font-semibold common-letter-spacing leading-tight;
+    @apply text-sm md:text-lg font-medium common-letter-spacing leading-tight;
+  }
+  .common-button {
+    @apply rounded-md text-sm font-medium text-foreground hover:bg-muted-hover;
   }
 
   .list-grid-1col {
