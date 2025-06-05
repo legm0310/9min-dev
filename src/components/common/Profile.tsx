@@ -41,10 +41,7 @@ const Profile = ({ className = '' }: ProfileProps) => {
             </p>
           </div>
           <div className="mb-2 w-5/6 md:w-[90%] text-sm md:text-base">
-            <p>
-              깊이 우선 탐구형 백엔드 엔지니어. 새로운 기술과 문제 해결에 열린
-              태도로 접근합니다.
-            </p>
+            <p>새로운 기술과 문제 해결에 열린 태도로 접근합니다.</p>
             <p>
               구조화 및 관심사 분리, 유지보수와 협업을 위한 코드를 선호합니다.
               TypeScript, Nestjs, Go, 블록체인 등에 흥미를 가지고 탐구합니다.
