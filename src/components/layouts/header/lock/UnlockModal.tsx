@@ -66,13 +66,13 @@ const UnlockModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="bg-secondary hover:bg-muted-hover text-foreground hover:opacity-90 text-sm px-3 py-2 rounded-md transition-colors"
+            className="hover:bg-muted-hover text-foreground hover:opacity-90 text-sm px-3 py-2 rounded-md transition-colors"
           >
             취소
           </button>
           <button
             type="submit"
-            className="bg-secondary hover:bg-muted-hover text-foreground hover:opacity-90 text-sm px-3 py-2 rounded-md transition-colors"
+            className="hover:bg-muted-hover text-foreground hover:opacity-90 text-sm px-3 py-2 rounded-md transition-colors"
           >
             확인
           </button>

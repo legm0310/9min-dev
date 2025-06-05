@@ -101,7 +101,7 @@
 
   --muted: 220 14% 95%; /* 밝은 회색 (배경용) → #f3f4f6 근처 */
   --muted-foreground: 220 10% 40%; /* 어두운 회색 텍스트 → #6b7280 근처 */
-  --muted-hover: 220 14% 90%;
+  --muted-hover: 220 14% 95%;
 
   --success: 0 0% 0%;
   --success-foreground: 0 0% 0%;

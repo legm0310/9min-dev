@@ -7,9 +7,10 @@ interface ModalProps {
   open: boolean;
   onClose: () => void;
   children: ReactNode;
+  className?: string;
 }
 
-const Modal = ({ open, onClose, children }: ModalProps) => {
+const Modal = ({ open, onClose, children, className = '' }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const mouseDownInsideRef = useRef(false);
 
@@ -42,7 +43,7 @@ const Modal = ({ open, onClose, children }: ModalProps) => {
     <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-center">
       <div
         ref={modalRef}
-        className="bg-muted text-foreground p-6 rounded shadow-md w-80"
+        className={`bg-background text-foreground p-6 rounded shadow-md w-80 ${className}`}
       >
         {children}
       </div>
