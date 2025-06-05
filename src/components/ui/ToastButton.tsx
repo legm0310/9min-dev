@@ -19,7 +19,7 @@ interface ToastButtonProps {
   type?: ToastTypes;
   className?: string;
   toastOptions?: ExternalToast;
-  promise?: () => Promise<any>;
+  promise?: () => Promise<unknown>;
   custom?: (id: number | string) => React.ReactElement;
   toastIdToDismiss?: string | number;
 }
