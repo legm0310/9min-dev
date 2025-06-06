@@ -22,7 +22,7 @@ const Header = () => {
     <header
       className={`sticky z-10 top-0 w-full h-20 transition-shadow duration-200 ${
         isScrolled
-          ? 'bg-[color:var(--background)]/80 backdrop-blur-md shadow'
+          ? 'bg-[color:var(--background)]/80 backdrop-blur-md shadow-md'
           : 'bg-[color:var(--background)]'
       }`}
     >
