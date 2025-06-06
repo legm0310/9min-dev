@@ -2,21 +2,16 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-interface MenuItemButtonProps {
+interface MenuItemProps {
   label: string;
   href: string;
   className?: string;
 }
 
-const MenuItemButton = ({
-  label,
-  href,
-  className = '',
-}: MenuItemButtonProps) => {
+const MenuItem = ({ label, href, className = '' }: MenuItemProps) => {
   let itemClass = '';
   const path = usePathname();
   const isActive = path === href;
-  console.log(isActive, path, href);
 
   if (isActive) {
     itemClass += 'text-foreground font-semibold';
@@ -37,4 +32,4 @@ const MenuItemButton = ({
   );
 };
 
-export default MenuItemButton;
+export default MenuItem;

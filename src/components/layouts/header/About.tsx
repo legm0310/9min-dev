@@ -1,7 +1,7 @@
-import MenuItemButton from '@/components/ui/MenuItemButton';
+import MenuItem from '@/components/ui/MenuItem';
 
 const About = () => {
-  return <MenuItemButton label="About" href="/about" />;
+  return <MenuItem label="About" href="/about" />;
 };
 
 export default About;

@@ -1,6 +1,6 @@
-import MenuItemButton from '@/components/ui/MenuItemButton';
+import MenuItem from '@/components/ui/MenuItem';
 
 const Posts = () => {
-  return <MenuItemButton label="Posts" href="/posts" />;
+  return <MenuItem label="Posts" href="/posts" />;
 };
 export default Posts;
