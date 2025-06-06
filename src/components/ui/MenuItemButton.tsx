@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface MenuItemButtonProps {
   label: string;
@@ -7,16 +8,27 @@ interface MenuItemButtonProps {
   className?: string;
 }
 
-const MenuItemNavButton = ({
+const MenuItemButton = ({
   label,
   href,
   className = '',
 }: MenuItemButtonProps) => {
+  let itemClass = '';
+  const path = usePathname();
+  const isActive = path === href;
+  console.log(isActive, path, href);
+
+  if (isActive) {
+    itemClass += 'text-foreground font-semibold';
+  } else {
+    itemClass += 'text-muted-foreground';
+  }
   return (
     <Link
       href={href}
       className={clsx(
-        'menu-item px-1 md:px-2 py-1 rounded-md transition-all duration-200 text-muted-foreground hover:px-1.5 md:hover:px-2.5 hover:text-foreground hover:bg-muted-hover hover:shadow-md',
+        itemClass,
+        'menu-item px-1 md:px-2 py-1 rounded-md transition-all duration-200 hover:px-1.5 md:hover:px-2.5 hover:bg-muted-hover hover:shadow-md',
         className,
       )}
     >
@@ -25,4 +37,4 @@ const MenuItemNavButton = ({
   );
 };
 
-export default MenuItemNavButton;
+export default MenuItemButton;
