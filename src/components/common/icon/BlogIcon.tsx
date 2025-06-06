@@ -3,21 +3,13 @@ import IconWrapper from '@/components/ui/IconWrapper';
 interface BlogIconProps {
   width: number;
   height: number;
-  href: string;
+  href?: string;
   className?: string;
 }
 
 const BlogIcon = ({ width, height, href, className = '' }: BlogIconProps) => {
   return (
     <IconWrapper href={href} className={`${className}`}>
-      {/* <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={`${width}`}
-        height={`${height}`}
-        version="1.1"
-        viewBox="0 0 64 64 "
-        fill="currentColor"
-      > */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width={`${width}`}

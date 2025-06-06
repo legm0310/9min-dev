@@ -43,41 +43,30 @@ const AboutPage = () => {
         <div className="flex flex-row gap-6">
           <div className="flex flex-col space-y-2">
             <div className="flex flex-row items-center gap-1">
-              <ResidenceIcon
-                href="mailto:legm0310@gmail.com"
-                width={16}
-                height={16}
-              />
+              <ResidenceIcon width={16} height={16} />
               <p>Residence</p>
             </div>
             <div className="flex flex-row items-center gap-1">
-              <EmailIcon
-                href="mailto:legm0310@gmail.com"
-                width={16}
-                height={16}
-              />
+              <EmailIcon width={16} height={16} />
               <p>Email</p>
             </div>
             <div className="flex flex-row items-center gap-1">
-              <GithubIcon
-                href="https://github.com/legm0310"
-                width={16}
-                height={16}
-              />
+              <GithubIcon width={16} height={16} />
               <p>Github</p>
             </div>
             <div className="flex flex-row items-center gap-1">
-              <BlogIcon
-                href="https://9min-dev.vercel.app/posts"
-                width={16}
-                height={16}
-              />
+              <BlogIcon width={16} height={16} />
               <p>Blog</p>
             </div>
           </div>
           <div className="flex flex-col space-y-2">
             <p>Goyang. Republic of Korea</p>
-            <p>legm0310@gmail.com</p>
+            <Link
+              href={'mailto:legm0310@gmail.com'}
+              className="underline-offset-4 decoration-2 decoration-primary hover:underline"
+            >
+              legm0310@gmail.com
+            </Link>
             <Link
               href={'https://github.com/legm0310'}
               className="underline-offset-4 decoration-2 decoration-primary hover:underline"

@@ -3,7 +3,7 @@ import IconWrapper from '@/components/ui/IconWrapper';
 interface ResidenceIconProps {
   width: number;
   height: number;
-  href: string;
+  href?: string;
   className?: string;
 }
 
