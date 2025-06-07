@@ -7,7 +7,11 @@ import LockIcon from './LockIcon';
 import UnlockModal from './UnlockModal';
 import { toast } from 'sonner';
 
-const Lock = () => {
+interface LockProps {
+  className?: string;
+}
+
+const Lock = ({ className = '' }: LockProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
   const router = useRouter();
@@ -40,7 +44,10 @@ const Lock = () => {
 
   return (
     <div>
-      <Button onClick={handleClick} className="px-1 md:px-1 py-1 group">
+      <Button
+        onClick={handleClick}
+        className={`px-1 md:px-1 py-1 group ${className} `}
+      >
         <LockIcon open={!!isUnlocked} />
       </Button>
       <UnlockModal

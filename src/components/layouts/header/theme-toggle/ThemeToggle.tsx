@@ -6,7 +6,11 @@ import Button from '@/components/ui/Button';
 import DarkIcon from './DarkIcon';
 import LightIcon from './LightIcon';
 
-const ThemeToggle = () => {
+interface ThemeToggleProps {
+  className?: string;
+}
+
+const ThemeToggle = ({ className = '' }: ThemeToggleProps) => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -17,7 +21,7 @@ const ThemeToggle = () => {
   return (
     <Button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="px-1 md:px-1 py-1 group"
+      className={`px-1 md:px-1 py-1 group ${className}`}
     >
       {theme === 'dark' ? <DarkIcon /> : <LightIcon />}
     </Button>
