@@ -1,8 +1,8 @@
+import Link from 'next/link';
+import ResidenceIcon from '@/components/common/icon/ResidenceIcon';
 import BlogIcon from '@/components/common/icon/BlogIcon';
 import EmailIcon from '@/components/common/icon/EmailIcon';
 import GithubIcon from '@/components/common/icon/GithubIcon';
-import ResidenceIcon from '@/components/common/icon/ResidenceIcon';
-import Link from 'next/link';
 
 const AboutPage = () => {
   return (
@@ -10,11 +10,11 @@ const AboutPage = () => {
       {/* -------------------------- introduction -------------------------- */}
       <section className="my-20">
         {/* 페이지 타이틀 */}
-        <div className="mb-10">
-          <div className="page-heading-semibold mb-2 text-primary">
+        <div className="mb-8 md:mb-10">
+          <div className="page-heading-semibold mb-2 text-primary md:mb-4">
             안녕하세요
           </div>
-          <div className="flex flex-row gap-4 items-end">
+          <div className="flex flex-col gap-2 lg:flex-row md:gap-4 lg:items-end">
             <div className="page-heading-semibold font-semibold">
               깊이 우선 탐구형 개발자
             </div>
@@ -24,19 +24,27 @@ const AboutPage = () => {
 
         {/* 자기 소개 */}
         <div className="mb-10 w-[90%]">
-          <h3 className="text-base md:text-lg">
-            블록체인, 백엔드 개발에 관심을 갖고 공부하고 있습니다. 상황에 맞는
-            최선의 방법을 찾기 위해 고민합니다.
+          <h3 className="text-[15px] leading-5 sm:text-base md:text-lg">
+            블록체인, 백엔드 개발에 관심을 갖고 TypeScript, Nest.js, Go를 개발에
+            활용하며 공부하고 있습니다. 상황에 맞는 최선의 방법을 찾기 위해
+            고민합니다. 디버깅에 어려움을 느끼고 3계층 아키텍처를 도입해
+            낭비되는 리소스를 줄인 경험이 있습니다. Port And Adapter 패턴을
+            적용해 도메인 별 사용사례를 정리하고, 계층별 추상화를 통해 유지
+            보수에 용이한 코드를 작성할 수 있습니다.
           </h3>
-          <h3 className="text-base md:text-lg">
+          {/* <h3 className="text-base md:text-lg">
+            블록체인, 백엔드 개발에 관심을 갖고 TypeScript, Nest.js, Go를 개발에
+            활용하며 공부하고 있습니다. 상황에 맞는 최선의 방법을 찾기 위해
+            고민합니다.
+          </h3> */}
+          {/* <h3 className="text-base md:text-lg">
             디버깅에 어려움을 느끼고 3계층 아키텍처를 도입해 낭비되는 리소스를
             줄인 경험이 있습니다.
           </h3>
           <h3 className="text-base md:text-lg">
-            Nestjs와 Port And Adapter 패턴을 적용해 도메인 별 사용사례를
-            정리하고, 계층별 추상화를 통해 유지 보수에 용이한 코드를 작성한
-            경험이 있습니다.
-          </h3>
+            Port And Adapter 패턴을 적용해 도메인 별 사용사례를 정리하고, 계층별
+            추상화를 통해 유지 보수에 용이한 코드를 작성한 경험이 있습니다.
+          </h3> */}
         </div>
 
         {/* 인적 사항 */}
@@ -90,22 +98,22 @@ const AboutPage = () => {
 
       {/* -------------------------- projects -------------------------- */}
       <section className="mb-20">
-        <h1 className="font-semibold">Projects</h1>
+        <h1 className="font-semibold">프로젝트</h1>
       </section>
 
       {/* -------------------------- education -------------------------- */}
       <section className="mb-20">
-        <h1 className="font-semibold">Education</h1>
-      </section>
-
-      {/* -------------------------- certificate -------------------------- */}
-      <section className="mb-20">
-        <h1 className="font-semibold">Certificate</h1>
+        <h1 className="font-semibold">교육</h1>
       </section>
 
       {/* -------------------------- activities -------------------------- */}
       <section className="mb-20">
-        <h1 className="font-semibold">Activities</h1>
+        <h1 className="font-semibold">활동</h1>
+      </section>
+
+      {/* -------------------------- certificate -------------------------- */}
+      <section className="mb-20">
+        <h1 className="font-semibold">자격증</h1>
       </section>
     </>
   );
