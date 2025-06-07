@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ThemeToggle from './theme-toggle/ThemeToggle';
 import Logo from './Logo';
+import MobileNavMenu from './MobileNavMenu';
 import Posts from './Posts';
 import About from './About';
 import Portfolio from './Portfolio';
 import Lock from './lock/Lock';
 import Donation from './donation/Donation';
+import ThemeToggle from './theme-toggle/ThemeToggle';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -28,7 +29,8 @@ const Header = () => {
     >
       <div className="w-full h-full mx-auto px-6 py-4 flex justify-between items-center ">
         <Logo />
-        <div className="flex items-center gap-2">
+        <MobileNavMenu />
+        <div className="hidden sm:flex items-center gap-2">
           <Posts />
           <About />
           <Portfolio />
