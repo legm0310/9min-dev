@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import MenuIcon from '@/components/common/icon/MenuIcon';
 import MoblieMenuItem from './MobileMenuItem';
@@ -21,20 +21,34 @@ const MobileNavMenu = () => {
     }
   };
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 640px)');
+
+    const handleResize = () => {
+      if (mediaQuery.matches) {
+        setIsOpen(false);
+        document.body.style.overflow = '';
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleResize);
+    return () => mediaQuery.removeEventListener('change', handleResize);
+  }, []);
+
   return (
-    <div className="flex flex-row items-center gap-2 sm:hidden">
+    <div className="flex flex-row sm:hidden items-center gap-2">
       <Lock
         className={clsx(
           'transition-all duration-300',
           !isOpen && 'opacity-0 translate-x-8 pointer-events-none',
-          isOpen && 'flex items-center gap-2 translate-x-0 opacity-100',
+          isOpen && 'opacity-100 translate-x-0 flex',
         )}
       />
       <ThemeToggle
         className={clsx(
           'transition-all duration-200',
           !isOpen && 'opacity-0 translate-x-6 pointer-events-none',
-          isOpen && 'flex items-center gap-2 translate-x-0 opacity-100',
+          isOpen && 'opacity-100 translate-x-0 flex',
         )}
       />
       <button onClick={handleToggle} className="sm:hidden">
@@ -43,10 +57,9 @@ const MobileNavMenu = () => {
       {true && (
         <ul
           className={clsx(
-            'absolute flex flex-col gap-6 bg-background z-10',
-            'pb-1 px-4',
-            'left-0 top-20 w-full h-[calc(100vh-5rem)]',
-            'transition-all duration-200 ease-in-out',
+            'absolute flex flex-col gap-6 z-10 bg-background',
+            'pb-1 px-4 left-0 top-20 w-full h-[calc(100vh-5rem)]',
+            'transition-[transform,opacity,box-shadow] duration-200 ease-in-out',
             isOpen
               ? 'translate-x-0 opacity-100'
               : '-translate-x-full opacity-0',
