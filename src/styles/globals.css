@@ -34,6 +34,9 @@
 
 @layer components {
   /* for caption, index, date ...etc */
+  .gradient-heading-color {
+    @apply text-transparent duration-200 bg-clip-text animate-gradient-scroll bg-[image:theme(backgroundImage.gradient)] bg-[length:200%_100%];
+  }
   .display-heading {
     @apply text-5xl md:text-6xl font-bold common-letter-spacing leading-tight;
   }
@@ -78,10 +81,6 @@
 
   .tag-pill:hover {
     @apply bg-muted-hover text-foreground shadow-sm;
-  }
-
-  .gradient-heading-color {
-    @apply text-transparent duration-200 bg-clip-text animate-gradient-scroll bg-[image:theme(backgroundImage.gradient)] bg-[length:200%_100%];
   }
 }
 
