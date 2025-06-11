@@ -35,12 +35,12 @@ const Profile = ({ className = '' }: ProfileProps) => {
         {/*-------------- info, position, description, contect icon -------------- */}
         <div className="flex flex-col text-center md:text-start items-center md:items-start">
           <div className="mb-2 flex flex-row gap-2 items-end">
-            <h2 className="md:text-lg">Lee Gyumin(9min)</h2>
+            <h2 className="">Lee Gyumin(9min)</h2>
             <p className="text-sm md:text-base text-secondary-foreground">
               Blockchain, Backend Engineer
             </p>
           </div>
-          <div className="mb-2 w-5/6 md:w-[90%] text-sm md:text-base text-muted-foreground">
+          <div className="mb-2 w-5/6 md:w-[90%] text-sm md:text-base text-secondary-foreground">
             <p>새로운 기술과 문제 해결에 열린 태도로 접근합니다.</p>
             <p>
               구조화 및 관심사 분리, 유지보수와 협업을 위한 코드를 선호합니다.
@@ -71,12 +71,12 @@ const Profile = ({ className = '' }: ProfileProps) => {
         message="준비 중입니다 🚀"
         className="self-center md:self-start"
       >
-        <span className="p-2 underline text-muted-foreground hover:text-foreground">
+        <span className="p-2 underline text-secondary-foreground hover:text-link-muted">
           More About me -{'>'}
         </span>
       </ToastButton>
       {/* <Link href={'/about'} className="self-center md:self-start">
-        <span className="p-2 underline text-muted-foreground hover:text-foreground">
+        <span className="p-2 underline text-secondary-foreground hover:text-link-muted">
           More About me -{'>'}
         </span>
       </Link> */}

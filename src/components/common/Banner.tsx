@@ -15,7 +15,7 @@ const Banner = ({ className = '' }: BannerProps) => {
         이규민의 <span className="italic pr-2">사나이클럽</span>
       </Landing>
       <Link href={'/posts'} className="self-center md:self-start">
-        <span className="p-2 underline text-muted-foreground hover:text-foreground">
+        <span className="p-2 underline text-secondary-foreground hover:text-link-muted">
           More Posts -{'>'}
         </span>
       </Link>
