@@ -103,6 +103,7 @@ const config: Config = {
           subtle: 'hsl(var(--border-subtle))',
         },
         overlay: 'hsl(var(--overlay))',
+        'link-muted': 'hsl(var(--link-muted))',
         //todo remove
         'codeblock-title': {
           DEFAULT: 'hsl(var(--codeblock-title-bg))',

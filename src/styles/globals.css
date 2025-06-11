@@ -108,14 +108,8 @@
   --success: 0 0% 0%;
   --success-foreground: 0 0% 0%;
 
-  --success: 0 0% 0%;
-  --success-foreground: 0 0% 0%;
-
   --info: 210 100% 95%;
   --info-foreground: 210 100% 20%;
-
-  /* --info: 200 100% 94%;
-  --info-foreground: 200 80% 25%; */
 
   --warning: 45 100% 92%;
   --warning-foreground: 45 100% 20%;
@@ -142,6 +136,8 @@
   --border-subtle: 210 20% 91%;
 
   --overlay: 0 0% 0%;
+
+  --link-muted: 220 10% 60%;
 
   --codeblock-title-bg: 220 9% 28%;
   --codeblock-title-fg: 220 20% 90%;
@@ -198,6 +194,8 @@
   --border-subtle: 215 14% 34%;
 
   --overlay: 0 0% 0%;
+
+  --link-muted: 220 12% 70%;
 
   --codeblock-title-bg: 220 13% 18%;
   --codeblock-title-fg: 220 14% 85%;
