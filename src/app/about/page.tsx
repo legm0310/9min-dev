@@ -14,12 +14,12 @@ const AboutPage = () => {
         {/* 페이지 타이틀 */}
 
         {/* 1안 */}
-        <div className="mb-8 md:mb-10 flex flex-col gap-1 sm:gap-2 md:gap-4">
+        <div className="mb-8 md:mb-10 flex flex-col gap-2 md:gap-4">
           <div className="page-heading-semibold font-medium">안녕하세요</div>
-          <div className="flex flex-col gap-1 sm:gap-2 md:gap-4 lg:flex-row lg:items-end">
-            <div className="text-4xl xs:text-[44px] font-semibold sm:display-heading sm:font-semibold text-foreground">
+          <div className="flex flex-col gap-2 md:gap-4 lg:flex-row lg:items-end">
+            <div className="text-4xl xs:text-[44px] sm:!text-5xl md:!text-6xl font-semibold text-foreground">
               {/* <span className="text-[44px] font-semibold sm:display-heading sm:font-semibold text-primary"> */}
-              <span className="text-4xl xs:text-[44px] font-semibold sm:display-heading sm:font-semibold text-foreground underline decoration-primary/75 decoration-[14px] underline-offset-[-4px]">
+              <span className="font-semibold text-foreground underline decoration-primary/75 decoration-[14px] underline-offset-[-4px]">
                 깊이 우선 탐구형
               </span>{' '}
               개발자
