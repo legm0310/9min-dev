@@ -26,6 +26,8 @@ const config: Config = {
       },
 
       screens: {
+        '2xs': '375px',
+        xs: '480px',
         sm: '640px',
         md: '768px',
         lg: '1024px', // ✅ 기본 lg는 1024px 이상

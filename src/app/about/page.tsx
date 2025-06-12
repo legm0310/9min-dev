@@ -17,9 +17,9 @@ const AboutPage = () => {
         <div className="mb-8 md:mb-10 flex flex-col gap-1 sm:gap-2 md:gap-4">
           <div className="page-heading-semibold font-medium">안녕하세요</div>
           <div className="flex flex-col gap-1 sm:gap-2 md:gap-4 lg:flex-row lg:items-end">
-            <div className="text-[44px] font-semibold sm:display-heading sm:font-semibold text-foreground">
+            <div className="text-4xl xs:text-[44px] font-semibold sm:display-heading sm:font-semibold text-foreground">
               {/* <span className="text-[44px] font-semibold sm:display-heading sm:font-semibold text-primary"> */}
-              <span className="text-[44px] font-semibold sm:display-heading sm:font-semibold text-foreground underline decoration-primary/75 decoration-[14px] underline-offset-[-4px]">
+              <span className="text-4xl xs:text-[44px] font-semibold sm:display-heading sm:font-semibold text-foreground underline decoration-primary/75 decoration-[14px] underline-offset-[-4px]">
                 깊이 우선 탐구형
               </span>{' '}
               개발자
@@ -284,20 +284,17 @@ const AboutPage = () => {
             </aside>
 
             <div className="flex flex-col gap-3">
-              <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
+              <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 italic text-muted-foreground">
                 한국정보보호학회
               </p>
-              <div className="flex flex-row items-end gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
+              <div className="flex flex-row items-end gap-1.5 xs:gap-2">
+                <h3 className="text-[17px] xs:text-lg md:text-xl md:font-semibold">
                   한국정보보호학회 동계학술대회 논문 투고
                 </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
+                <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 text-muted-foreground">
                   2023. 12
                 </p>
               </div>
-              {/* <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
-                한국정보보호학회
-              </p> */}
               <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
                 <li>
                   <h4>
@@ -325,20 +322,17 @@ const AboutPage = () => {
             </aside>
 
             <div className="flex flex-col gap-3">
-              <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
+              <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 italic text-muted-foreground">
                 중부대학교
               </p>
-              <div className="flex flex-row items-end gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
+              <div className="flex flex-row items-end gap-1.5 xs:gap-2">
+                <h3 className="text-[17px] xs:text-lg md:text-xl md:font-semibold">
                   교내 캡스톤디자인 경진대회 참가
                 </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
+                <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 text-muted-foreground">
                   2023. 12
                 </p>
               </div>
-              {/* <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
-                중부대학교
-              </p> */}
               <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
                 <li>
                   <h4>
@@ -364,20 +358,17 @@ const AboutPage = () => {
             </aside>
 
             <div className="flex flex-col gap-3">
-              <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
+              <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 italic text-muted-foreground">
                 한국정보보호산업협회(KISIA)
               </p>
-              <div className="flex flex-row items-end gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
+              <div className="flex flex-row items-end gap-1.5 xs:gap-2">
+                <h3 className="text-[16px] xs:text-lg md:text-xl md:font-semibold">
                   ICT융합산업보안 인재양성교육 블록체인 분야
                 </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
+                <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 text-muted-foreground">
                   2022. 11
                 </p>
               </div>
-              {/* <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
-                한국정보보호산업협회(KISIA)
-              </p> */}
               <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
                 <li>
                   <h4>kisia주관 블록체인 분야 인재 양성 교육 수료</h4>

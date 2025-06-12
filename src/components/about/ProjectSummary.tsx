@@ -102,7 +102,7 @@ const ProjectSummary = () => {
                   <h3 className="flex sm:hidden font-normal italic text-muted-foreground">
                     {p.title}
                   </h3>
-                  <div className="flex flex-row items-end gap-2">
+                  <div className="flex flex-col xs:flex-row xs:items-end gap-2">
                     {p.url ? (
                       <Link
                         href={p.url}
@@ -117,7 +117,7 @@ const ProjectSummary = () => {
                         {p.subTitle}
                       </h3>
                     )}
-                    <p className="text-[15px] leading-5 text-muted-foreground">
+                    <p className="text-[15px] leading-6 text-muted-foreground">
                       {p.role}
                     </p>
                   </div>
