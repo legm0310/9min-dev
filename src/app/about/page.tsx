@@ -133,19 +133,19 @@ const AboutPage = () => {
             <p>Goyang. Republic of Korea</p>
             <Link
               href={'mailto:legm0310@gmail.com'}
-              className="underline-offset-4 decoration-2 decoration-primary hover:underline"
+              className="underline underline-offset-2 hover:decoration-2 hover:text-primary"
             >
               legm0310@gmail.com
             </Link>
             <Link
               href={'https://github.com/legm0310'}
-              className="underline-offset-4 decoration-2 decoration-primary hover:underline"
+              className="underline underline-offset-2 hover:decoration-2 hover:text-primary"
             >
               github.com/legm0310
             </Link>
             <Link
               href={'https://9min-dev.vercel.app/posts'}
-              className="underline-offset-4 decoration-2 decoration-primary hover:underline"
+              className="underline underline-offset-2 hover:decoration-2 hover:text-primary"
             >
               9min-dev.vercel.app
             </Link>
