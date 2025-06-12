@@ -74,14 +74,14 @@ export const projects = [
     ],
     links: [
       {
-        href: '/',
+        href: '',
         icon: 'github',
-        label: 'Github(준비중)',
+        label: 'Github',
       },
       {
-        href: '/',
+        href: '',
         icon: 'notion',
-        label: '포트폴리오(준비중)',
+        label: '포트폴리오',
       },
     ],
     skills: [
