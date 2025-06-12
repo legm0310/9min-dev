@@ -67,19 +67,11 @@ const Profile = ({ className = '' }: ProfileProps) => {
       </div>
 
       {/*------------------- more about me --------------------*/}
-      <ToastButton
-        message="준비 중입니다 🚀"
-        className="self-center md:self-start"
-      >
+      <Link href={'/about'} className="self-center md:self-start">
         <span className="p-2 underline text-secondary-foreground hover:text-link-muted">
           More About me -{'>'}
         </span>
-      </ToastButton>
-      {/* <Link href={'/about'} className="self-center md:self-start">
-        <span className="p-2 underline text-secondary-foreground hover:text-link-muted">
-          More About me -{'>'}
-        </span>
-      </Link> */}
+      </Link>
     </section>
   );
 };
