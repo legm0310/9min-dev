@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/icons/favicon_io/favicon.ico',
   },
-  title: '이규민의 개발기행',
+  title: '이규민의 개발 기행',
   description: '비밀창고',
 };
 
