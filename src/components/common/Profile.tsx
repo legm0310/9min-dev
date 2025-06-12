@@ -35,7 +35,8 @@ const Profile = ({ className = '' }: ProfileProps) => {
         {/*-------------- info, position, description, contect icon -------------- */}
         <div className="flex flex-col text-center md:text-start items-center md:items-start">
           <div className="mb-2 flex flex-row gap-2 items-end">
-            <h2 className="">Lee Gyumin(9min)</h2>
+            {/* <h2 className="">Lee Gyumin(9min)</h2> */}
+            <h2 className="">이규민 Gyumin Lee</h2>
             <p className="text-sm md:text-base text-secondary-foreground">
               Blockchain, Backend Engineer
             </p>
