@@ -10,15 +10,13 @@ const Banner = ({ className = '' }: BannerProps) => {
     <section
       className={`flex flex-col items-center md:items-start ${className}`}
     >
-      <h2 className="mb-4 font-medium ">경험하고 탐구한 내용을 기록합니다</h2>
-      <Landing className="mb-4">
-        이규민의 <span className="italic pr-2">사나이클럽</span>
+      {/* <h2 className="mb-4 font-medium ">경험하고 탐구한 내용을 기록합니다</h2> */}
+      <Landing className="p-1 mb-4 text-2xl xs:text-3xl md:text-4xl italic font-semibold">
+        경험하고 탐구한 내용을 기록합니다
       </Landing>
-      <Link href={'/posts'} className="self-center md:self-start">
-        <span className="p-2 underline text-secondary-foreground hover:text-link-muted">
-          More Posts -{'>'}
-        </span>
-      </Link>
+      {/* <Landing className="mb-4 text-5xl md:text-6xl">
+        이규민의 <span className="italic pr-2">개발 기행</span>
+      </Landing> */}
     </section>
   );
 };

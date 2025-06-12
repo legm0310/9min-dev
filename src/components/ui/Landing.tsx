@@ -10,8 +10,8 @@ const Landing = ({ className = '', children }: LandingProps) => {
     <div>
       <div
         className={clsx(
-          'text-5xl md:text-6xl',
-          'w-full text-left font-semibold',
+          // 'text-5xl md:text-6xl',
+          'w-full',
           'gradient-heading-color',
           className,
         )}
