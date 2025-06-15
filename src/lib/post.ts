@@ -15,7 +15,6 @@ import {
 
 const CONTENTS_DIR = path.join(process.cwd(), 'src/contents');
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
-const DEFAULT_THUMBNAIL = '/contents/posts/default-thumbnail.jpg';
 /**
  * @TODO
  * - 모든 게시물의 메타데이터만 가져오게 리팩토링
@@ -41,7 +40,7 @@ export const isCategory = (segments: string[]): boolean => {
   return !fs.existsSync(fullPath);
 };
 
-const checkThumbnailUrl = (thumbnailPath: string): boolean => {
+export const checkThumbnailUrl = (thumbnailPath: string): boolean => {
   const fullPath = path.join(PUBLIC_DIR, thumbnailPath);
   return fs.existsSync(fullPath);
 };
@@ -99,10 +98,12 @@ const parseContent = (postPath: string) => {
   const file = fs.readFileSync(postPath, 'utf-8');
   const { data, content } = matter(file);
   const frontmatter: PostFrontmatter = PostFrontmatterSchema.parse(data);
+
   const thumbnail = checkThumbnailUrl(frontmatter.thumbnail)
     ? frontmatter.thumbnail
-    : DEFAULT_THUMBNAIL;
+    : '';
   frontmatter.thumbnail = thumbnail;
+
   const readingTime = readTime(content).text;
   return { frontmatter, content, readingTime };
 };

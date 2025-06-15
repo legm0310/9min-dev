@@ -20,6 +20,7 @@ export interface PostSummary {
   readingTime: string;
   url: string;
   thumbnail: string;
+  description: string;
 }
 
 export interface Post extends PostSummary {

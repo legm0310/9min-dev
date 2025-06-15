@@ -1,20 +1,36 @@
-export const projects = [
-  // {
-  //   title: '',
-  //   subTitle: '',
-  //   url: '',
-  //   role: '',
-  //   subInfo: [],
-  //   description: '',
-  //   contrib: [],
-  //   links: [],
-  //   skills: [],
-  // },
+interface Contribution {
+  href: string;
+  content: string;
+}
+
+interface Link {
+  href: string;
+  icon: string;
+  label: string;
+}
+
+export interface Project {
+  isAvailable: boolean;
+  slug: string;
+  title: string;
+  subTitle: string;
+  // thumbnail?: string;
+  url: string;
+  role: string;
+  subInfo: string[];
+  description: string;
+  contrib: (Contribution | string)[];
+  links: Link[];
+  skills: string[];
+}
+
+export const projects: Project[] = [
   {
     isAvailable: true,
+    slug: '9min-dev',
     title: '9min.dev',
     subTitle: '이규민 개인 블로그',
-    url: '/',
+    url: '',
     role: '',
     subInfo: ['2025. 04 - 2025. 06', '개인 프로젝트'],
     description: 'Next.js, SSG를 통해 구현한 기술 블로그 + 개인 홈페이지입니다',
@@ -37,6 +53,7 @@ export const projects = [
   },
   {
     isAvailable: true,
+    slug: 'go-blockchain-mining',
     title: '블록체인 PoW',
     subTitle: '블록체인 채굴 모듈 클론 코딩',
     url: '',
@@ -60,6 +77,7 @@ export const projects = [
   },
   {
     isAvailable: true,
+    slug: 'grader',
     title: '그레이더 - Grader',
     subTitle: '가상화폐 자동 매수 시스템',
     url: '',
@@ -95,6 +113,7 @@ export const projects = [
   },
   {
     isAvailable: true,
+    slug: 'calog',
     title: '캘로그 - Calog',
     subTitle: '일정 관리 및 공유 서비스',
     url: '',
@@ -128,6 +147,7 @@ export const projects = [
   },
   {
     isAvailable: true,
+    slug: 'panda',
     title: '판다 - PANDA',
     subTitle: '블록체인 기반 안전거래 플랫폼',
     url: '',
@@ -183,6 +203,7 @@ export const projects = [
   },
   {
     isAvailable: true,
+    slug: 'jbid',
     title: 'JBID',
     subTitle: 'DID 기반 학생증 서비스',
     url: '',
