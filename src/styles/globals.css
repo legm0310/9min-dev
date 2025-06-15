@@ -133,7 +133,8 @@
   --surface-foreground: 0 0% 0%;
 
   --border: 0 0% 0%;
-  --border-subtle: 210 20% 91%;
+  /* --border-subtle: 210 20% 91%; */
+  --border-subtle: 0 0% 88%;
 
   --overlay: 0 0% 0%;
 
@@ -191,7 +192,7 @@
   --surface-foreground: 0 0% 0%;
 
   --border: 0 0% 0%;
-  --border-subtle: 215 14% 34%;
+  --border-subtle: 0 0% 32%;
 
   --overlay: 0 0% 0%;
 
