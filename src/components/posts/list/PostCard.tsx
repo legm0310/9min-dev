@@ -4,7 +4,7 @@ import Tag from '@/components/ui/Tag';
 import { getCategoryLabel } from '@/lib/post';
 import { PostSummary } from '@/types/types';
 import { parseDateToString } from '@/utils/date';
-import Thumbnail from '@/components/ui/Thumbnail';
+import Thumbnail from '@/components/common/Thumbnail';
 
 interface PostCardProps {
   postInfo: PostSummary;
@@ -61,12 +61,12 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
             </div>
           </div>
           <div
-            className={`hidden sm:flex w-52 h-full md:flex-shrink-0 overflow-hidden rounded-md`}
+            className={`hidden sm:flex w-52 h-full md:flex-shrink-0 overflow-hidden border border-border-subtle rounded-md`}
           >
             <Thumbnail
               src={postInfo.thumbnail}
               alt={postInfo.title}
-              className="transform transition-transform duration-300 group-hover:scale-110"
+              className="transform transition-transform duration-300 group-hover:scale-110 rounded-md"
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
         href={`${postInfo.url}`}
         className="group h-full flex flex-col flex-1 rounded-md transition-[padding,box-shadow] duration-300 hover:shadow-lg"
       >
-        <div className="overflow-hidden rounded-t-md">
+        <div className="overflow-hidden border border-border-subtle rounded-t-md">
           <Thumbnail
             src={postInfo.thumbnail}
             alt={postInfo.title}
