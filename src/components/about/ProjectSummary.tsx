@@ -145,22 +145,22 @@ const ProjectSummary = () => {
 
                   {/* ------------------------프로젝트 기여 항목------------------------ */}
                   <ul className="pl-5 list-disc space-y-1">
-                    {p.contrib.map((c, idx) => (
-                      <li key={idx}>
-                        {typeof c === 'string' ? (
-                          c
-                        ) : c.href ? (
+                    {p.contrib.map((c, i) =>
+                      typeof c === 'string' ? (
+                        <li key={i}>{c}</li>
+                      ) : c.href ? (
+                        <li key={i} className="marker:text-primary">
                           <Link
                             href={c.href}
                             className="underline underline-offset-2 text-muted-foreground hover:text-primary hover:font-medium"
                           >
                             {c.content}
                           </Link>
-                        ) : (
-                          c.content
-                        )}
-                      </li>
-                    ))}
+                        </li>
+                      ) : (
+                        <li key={i}>{c.content}</li>
+                      ),
+                    )}
                   </ul>
 
                   {/* ------------------------사용 기술------------------------ */}
