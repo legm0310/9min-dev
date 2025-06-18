@@ -6,6 +6,66 @@ import BlogIcon from '@/components/common/icon/BlogIcon';
 import EmailIcon from '@/components/common/icon/EmailIcon';
 import GithubIcon from '@/components/common/icon/GithubIcon';
 
+const educationList = [
+  {
+    date: '2018. 03 – 2024. 02',
+    name: '중부대학교 고양캠퍼스',
+    description: '정보보호학전공 학사 졸업; 평점 3.77/4.5',
+  },
+  {
+    date: '2015. 03 – 2018. 02',
+    name: '고양일고등학교',
+    description: '인문 자연계열',
+  },
+];
+
+const activityList = [
+  {
+    date: '2023. 12',
+    host: '한국정보보호학회',
+    name: '한국정보보호학회 동계학술대회 논문 투고',
+    description:
+      '블록체인 기반 안전 거래 플랫폼(판다)을 주제로 논문 작성; 2023년 한국정보보호학회 동계학술대회(CISC-W` 23) 논문 투고 및 발표 (논문 번호 131)',
+  },
+  {
+    date: '2023. 12',
+    host: '중부대학교',
+    name: '교내 캡스톤디자인 경진대회 참가',
+    description:
+      '블록체인 기반 안전 거래 플랫폼(판다)을 주제로 캡스톤디자인 경진대회 참가; 52개 팀 중 자연과학 및 공과계열 11팀으로 입선',
+  },
+  {
+    date: '2022. 11',
+    host: '한국정보보호산업협회(KISIA)',
+    name: 'ICT융합산업보안 인재양성교육 블록체인 분야',
+    description:
+      'KISIA주관 블록체인 분야 인재 양성 교육 수료; 블록체인 개요와 이론, 이더리움 및 솔리디티를 활용한 스마트 컨트랙트 실습',
+  },
+];
+
+const certificateList = [
+  {
+    date: '2023. 10',
+    certificate: 'SQLD(SQL 개발자)',
+    issuance: '데이터베이스진흥원',
+  },
+  {
+    date: '2023. 06',
+    certificate: '정보처리기사',
+    issuance: '한국산업인력공단',
+  },
+  {
+    date: '2021. 11',
+    certificate: '네트워크관리사 2급',
+    issuance: '한국정보통신자격협회',
+  },
+  {
+    date: '2021. 10',
+    certificate: '윈도우포렌식전문가 2급',
+    issuance: '한국산업보안포럼',
+  },
+];
+
 const AboutPage = () => {
   return (
     <>
@@ -215,271 +275,170 @@ const AboutPage = () => {
       {/* -------------------------- education -------------------------- */}
       <section className="mb-20">
         <h1 className="mb-10 font-extrabold">교육</h1>
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col gap-5 min-w-36 w-48 flex-shrink-0">
-              <h3 className="md:font-normal text-muted-foreground">
-                2018. 03 - 2024. 02
-              </h3>
-            </aside>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-row items-center gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
-                  중부대학교 고양캠퍼스
+        <div className="ml-4 sm:ml-0 flex flex-col gap-10">
+          {educationList.map((e, i) => (
+            <div key={i} className="flex flex-row gap-6 md:gap-16">
+              <aside className="hidden sm:flex flex-col gap-5 min-w-36 w-48 flex-shrink-0">
+                <h3 className="md:font-normal text-muted-foreground">
+                  {e.date}
                 </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
-                  2018. 03 - 2024. 02
-                </p>
-              </div>
-              <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
-                <li>
-                  <h4>정보보호학전공 학사 졸업</h4>
-                </li>
-                <li>
-                  <h4>평점 3.77/4.5</h4>
-                </li>
-              </ul>
-            </div>
-          </div>
+              </aside>
 
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col gap-5 min-w-36 w-48 flex-shrink-0">
-              <h3 className="md:font-normal text-muted-foreground">
-                2015. 03 - 2018. 02
-              </h3>
-            </aside>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-row items-center gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
-                  고양일고등학교
-                </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
-                  2018. 03 - 2024. 02
-                </p>
+              <div className="relative">
+                {i == 0 && (
+                  <div className="absolute inset-y-0 -inset-x-px md:left-full w-px h-48 bg-muted-foreground/60" />
+                )}
+                <span className="absolute left-0 md:left-full top-2 block w-2 h-2 rounded-full bg-primary -translate-x-1/2" />
               </div>
-              <ul className="pl-5 list-disc space-y-1">
-                <li>
-                  <h4 className="text-muted-foreground">인문 자연계열</h4>
-                </li>
-              </ul>
+
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-row items-center gap-2">
+                  <h3 className="text-[17px] xs:text-lg md:text-xl md:font-semibold">
+                    {e.name}
+                  </h3>
+                  <p className="sm:hidden text-sm xs:text-[15px] leading-5 text-muted-foreground">
+                    {e.date}
+                  </p>
+                </div>
+                <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
+                  {e.description.split(';').map((desc, i) => (
+                    <li key={i}>{desc}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
+
+        {/* <div className="ml-4 sm:ml-0 flex flex-col gap-10">
+          {educationList.map((e, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[1rem_1fr] sm:grid-cols-[auto_1rem_1fr] md:grid-cols-[auto_2rem_1fr] gap-6 md:gap-8 items-start"
+            >
+              <aside className="hidden sm:flex text-muted-foreground min-w-36 w-48 flex-shrink-0">
+                <h3 className="md:font-normal text-muted-foreground">
+                  {e.date}
+                </h3>
+              </aside>
+
+              <div className="relative">
+                {i == 0 && (
+                  <div className="absolute inset-y-0 -inset-x-px md:left-full w-px h-48 bg-border-subtle" />
+                )}
+                <span className="absolute left- md:left-full top-2 block w-2 h-2 rounded-full bg-primary -translate-x-1/2" />
+              </div>
+
+              <div>
+                <div className="flex flex-row items-center gap-2">
+                  <h3 className="text-lg md:text-xl font-semibold">{e.name}</h3>
+                  <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
+                    {e.date}
+                  </p>
+                </div>
+                <ul className="pl-5 list-disc mt-2 space-y-1 text-muted-foreground ">
+                  {e.description.split(';').map((desc, i) => (
+                    <li key={i}>{desc}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div> */}
       </section>
 
       {/* -------------------------- activities -------------------------- */}
       <section className="mb-20">
         <h1 className="mb-10 font-extrabold">활동</h1>
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
-              <p className="text-[15px] leading-5 text-muted-foreground">
-                2023. 12
-              </p>
-              <h3 className="md:font-normal text-muted-foreground">
-                한국정보보호학회
-              </h3>
-            </aside>
 
-            <div className="flex flex-col gap-3">
-              <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 italic text-muted-foreground">
-                한국정보보호학회
-              </p>
-              <div className="flex flex-row items-end gap-1.5 xs:gap-2">
-                <h3 className="text-[17px] xs:text-lg md:text-xl md:font-semibold">
-                  한국정보보호학회 동계학술대회 논문 투고
-                </h3>
-                <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 text-muted-foreground">
-                  2023. 12
+        <div className="ml-4 sm:ml-0 flex flex-col gap-10">
+          {activityList.map((a, i) => (
+            <div key={i} className="flex flex-row gap-6 md:gap-16">
+              <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
+                <p className="text-[15px] leading-5 text-muted-foreground">
+                  {a.date}
                 </p>
-              </div>
-              <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
-                <li>
-                  <h4>
-                    블록체인 기반 안전 거래 플랫폼(판다)을 주제로 논문 작성
-                  </h4>
-                </li>
-                <li>
-                  <h4>
-                    2023년 한국정보보호학회 동계학술대회(CISC-W` 23) 논문 투고
-                    및 발표 (논문 번호 131)
-                  </h4>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
-              <p className="text-[15px] leading-5 text-muted-foreground">
-                2023. 12
-              </p>
-              <h3 className="md:font-normal text-muted-foreground">
-                중부대학교
-              </h3>
-            </aside>
-
-            <div className="flex flex-col gap-3">
-              <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 italic text-muted-foreground">
-                중부대학교
-              </p>
-              <div className="flex flex-row items-end gap-1.5 xs:gap-2">
-                <h3 className="text-[17px] xs:text-lg md:text-xl md:font-semibold">
-                  교내 캡스톤디자인 경진대회 참가
+                <h3 className="md:font-normal text-muted-foreground">
+                  {a.host}
                 </h3>
-                <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 text-muted-foreground">
-                  2023. 12
-                </p>
-              </div>
-              <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
-                <li>
-                  <h4>
-                    블록체인 기반 안전 거래 플랫폼(판다)을 주제로 캡스톤디자인
-                    경진대회 참가
-                  </h4>
-                </li>
-                <li>
-                  <h4>52개 팀 중 자연과학 및 공과계열 11팀으로 입선</h4>
-                </li>
-              </ul>
-            </div>
-          </div>
+              </aside>
 
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
-              <p className="text-[15px] leading-5 text-muted-foreground">
-                2022. 11
-              </p>
-              <h3 className="md:font-normal text-muted-foreground">
-                한국정보보호산업협회(KISIA)
-              </h3>
-            </aside>
-
-            <div className="flex flex-col gap-3">
-              <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 italic text-muted-foreground">
-                한국정보보호산업협회(KISIA)
-              </p>
-              <div className="flex flex-row items-end gap-1.5 xs:gap-2">
-                <h3 className="text-[16px] xs:text-lg md:text-xl md:font-semibold">
-                  ICT융합산업보안 인재양성교육 블록체인 분야
-                </h3>
-                <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 text-muted-foreground">
-                  2022. 11
-                </p>
+              <div className="relative">
+                {i == 0 && (
+                  <div className="absolute inset-y-0 -inset-x-px md:left-full w-px h-[590px] xs:h-[476px] sm:!h-[428px] md:!h-[356px] bg-muted-foreground/60" />
+                )}
+                <span className="absolute left-0 md:left-full top-10 sm:top-2 block w-2 h-2 rounded-full bg-primary -translate-x-1/2" />
               </div>
-              <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
-                <li>
-                  <h4>kisia주관 블록체인 분야 인재 양성 교육 수료</h4>
-                </li>
-                <li>
-                  <h4>
-                    블록체인 개요와 이론, 이더리움 및 솔리디티를 활용한 스마트
-                    컨트랙트 실습
-                  </h4>
-                </li>
-              </ul>
+
+              <div className="flex flex-col gap-3">
+                <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 italic text-muted-foreground">
+                  {a.host}
+                </p>
+                <div className="flex flex-col xs:flex-row xs:items-end gap-1.5 xs:gap-2">
+                  {a.name.length < 20 ? (
+                    <h3 className="text-[17px] xs:text-lg md:text-xl md:font-semibold">
+                      {a.name}
+                    </h3>
+                  ) : (
+                    <h3 className="text-[16px] xs:text-lg md:text-xl md:font-semibold">
+                      {a.name}
+                    </h3>
+                  )}
+                  <p className="sm:hidden text-sm xs:text-[15px] xs:leading-5 text-muted-foreground">
+                    {a.date}
+                  </p>
+                </div>
+                <ul className="pl-5 list-disc space-y-1 text-muted-foreground">
+                  {a.description.split(';').map((desc, i) => (
+                    <li key={i}>
+                      <h4>{desc}</h4>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* -------------------------- certificate -------------------------- */}
       <section className="mb-20">
         <h1 className="mb-10 font-extrabold">자격증</h1>
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
-              <h3 className="md:font-normal text-muted-foreground">2023. 10</h3>
-            </aside>
 
-            <div className="flex flex-col gap-2">
-              <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
-                한국데이터베이스진흥원
-              </p>
-              <div className="flex flex-row items-end gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
-                  SQLD(SQL Developer)
+        <div className="ml-4 sm:ml-0 flex flex-col gap-10">
+          {certificateList.map((cert, i) => (
+            <div key={i} className="flex flex-row gap-6 md:gap-16">
+              <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
+                <h3 className="md:font-normal text-muted-foreground">
+                  {cert.date}
                 </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
-                  2022. 11
+              </aside>
+
+              <div className="relative">
+                {i == 0 && (
+                  <div className="absolute inset-y-0 -inset-x-px md:left-full w-px h-[344px] bg-muted-foreground/60" />
+                )}
+                <span className="absolute left-0 md:left-full top-9 sm:top-2 block w-2 h-2 rounded-full bg-primary -translate-x-1/2" />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
+                  {cert.issuance}
+                </p>
+                <div className="flex flex-row items-end gap-2">
+                  <h3 className="text-lg md:text-xl md:font-semibold">
+                    {cert.certificate}
+                  </h3>
+                  <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
+                    {cert.date}
+                  </p>
+                </div>
+                <p className="hidden sm:flex text-[15px] leading-5 italic text-muted-foreground">
+                  {cert.issuance}
                 </p>
               </div>
-              <p className="hidden sm:flex text-[15px] leading-5 italic text-muted-foreground">
-                한국데이터베이스진흥원
-              </p>
             </div>
-          </div>
-
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
-              <h3 className="md:font-normal text-muted-foreground">2023. 06</h3>
-            </aside>
-
-            <div className="flex flex-col gap-2">
-              <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
-                한국산업인력공단
-              </p>
-              <div className="flex flex-row items-end gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
-                  정보처리기사
-                </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
-                  2023. 06
-                </p>
-              </div>
-              <p className="hidden sm:flex text-[15px] leading-5 italic text-muted-foreground">
-                한국산업인력공단
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
-              <h3 className="md:font-normal text-muted-foreground">2021. 11</h3>
-            </aside>
-
-            <div className="flex flex-col gap-2">
-              <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
-                한국정보통신자격협회
-              </p>
-              <div className="flex flex-row items-end gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
-                  네트워크관리사 2급
-                </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
-                  2021. 11
-                </p>
-              </div>
-              <p className="hidden sm:flex text-[15px] leading-5 italic text-muted-foreground">
-                한국정보통신자격협회
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-6 md:gap-16">
-            <aside className="hidden sm:flex flex-col min-w-36 w-48 flex-shrink-0">
-              <h3 className="md:font-normal text-muted-foreground">2021. 10</h3>
-            </aside>
-
-            <div className="flex flex-col gap-2">
-              <p className="sm:hidden text-[15px] leading-5 italic text-muted-foreground">
-                한국산업보안포럼
-              </p>
-              <div className="flex flex-row items-end gap-2">
-                <h3 className="text-lg md:text-xl md:font-semibold">
-                  윈도우포렌식전문가 2급
-                </h3>
-                <p className="sm:hidden text-[15px] leading-5 text-muted-foreground">
-                  2021. 10
-                </p>
-              </div>
-              <p className="hidden sm:flex text-[15px] leading-5 italic text-muted-foreground">
-                한국산업보안포럼
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </>
