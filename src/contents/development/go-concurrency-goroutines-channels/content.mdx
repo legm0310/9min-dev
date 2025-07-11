@@ -14,28 +14,162 @@ goroutine에 대한 이론만 접해보고 직접 적용해본 경험이 없어�
 
 ## 동시성(Concurrency)과 병렬성(Parallelism) 이해
 
-관련 개념들을 평소에 들어보긴 했지만 확실하게 이해하고 있지 않았다는 생각에 동시성과 관련된 개념들을 정리했다
+관련 개념들을 평소에 들어보긴 했지만 확실하게 이해하고 있지 않았다는 생각에 동시성 관련된 개념을 정리했다
 
 ### 동시성(Concurrency)
 
-동시성은 여러 작업을 동시에 처리하는 것을 의미한다. 즉, 여러 작업을 동시에 처리하는 것을 의미한다.
+> 동시성은 여러 작업이 한번에 실행되는 것처럼 보이도록 하는 것
+
+싱글 코어의 경우 빠른 속도의 Context Switching을 통해 하나의 코어가 여러 작업을 동시에 실행하는 것처럼 보이게 한다.
+멀티 코어 cpu에서도 동시성은 존재한다. 스케줄러가 작업을 어떻게 분배하느냐에 따라 병렬 처리하지 않아도 동시에 다뤄지고 있는 것처럼 구성된다. 즉 동시성은 여러 작업을 다루는 것을 말한다.
+
+![동시성](/contents/posts/development/go-concurrency-goroutines-channels/concurrency.jpg)
 
 ### 병렬성(Parallelism)
 
-동시성과 병렬성은 둘 다 여러 작업을 동시에 처리하는 것을 의미한다. 하지만 둘 사이에는 차이가 있다.
+> 병렬성은 여러 작업을 동시에 실행하는 것
 
-동시성은 여러 작업을 동시에 처리하는 것을 의미한다. 즉, 여러 작업을 동시에 처리하는 것을 의미한다.
+여러 작업을 물리적으로 동시에 수행한다. 일반적으로 멀티 코어 cpu와 같이 여러 개의 처리 장치로 서로 다른 작업을 둥시에 실행한다. 즉 병렬성은 여러 작업을 실행하는 것을 말한다.
 
-병렬성은 여러 작업을 동시에 처리하는 것을 의미한다. 즉, 여러 작업을 동시에 처리하는 것을 의미한다
+![병렬성](/contents/posts/development/go-concurrency-goroutines-channels/parallelism.jpg)
 
 ### 동시성과 병렬성의 차이
 
+동시성은 Context Switching이나 스케줄링으로 여러 작업이 동시에 실행되는 것처럼 보이게 하지만 병렬성은 멀티 코어 또는 여러 서버를 통해 동시에 연산하는 기법을 말한다.
+정리하자면 다음과 같다.
+
+| 동시성                              | 병렬성                                  |
+| ----------------------------------- | --------------------------------------- |
+| 동시에 여러 작업을 다루는 것        | 동시에 여러 작업을 실행하는 것          |
+| Context Switching이나 스케줄링 사용 | 각 코어 또는 서버마다 다른 작업 할당    |
+| 싱글 코어                           | 멀티 코어 또는 여러 개의 서버           |
+| Thread, async/await, goroutine      | 멀티 코어를 통한 병렬 처리, 분산 시스템 |
+
 ## Golang에서의 동시성 구현
 
-### goroutine 개요
+Golang에서는 경량 스레드와 비슷한 개념의 **고루틴(Goroutine)** 을 통해 동시성을 처리한다. 고루틴을 사용하면 하나의 스레드에서 많은 작업을 동시에 실행할 수 있고 Go 런타임이 이 작업들을 효율적으로 스케줄링한다.
+
+동시 작업을 쉽게 생성하고 관리할 수 있는 채널을 기반으로 하는 동시성 모델을 제공하고, `sync.WaitGroup`과 같은 채널 및 동기화 프리미티브를 사용하여 여러 고루틴의 실행을 조정하고 원하는 순서로 작업을 완료하도록 할 수 있다
 
 ### goroutine 사용법
 
-### goroutine 간 통신 - channel
+#### 고루틴 기본 사용
 
-### goroutine 종료 대기
+기본적으로 `go`라는 키워드를 통해 비동기 함수 실행을 시작한다.
+
+```go showLineNumbers
+
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func say(msg string) {
+    for i := 0; i < 5; i++ {
+        fmt.Println(msg)
+        time.Sleep(100 * time.Millisecond)
+    }
+}
+
+func main() {
+    go say("world") // 고루틴 실행
+    say("hello")    // 메인 고루틴에서 실행
+}
+
+```
+
+#### 채널을 통한 고루틴 간 통신
+
+고루틴 간의 통신을 동기화하기 위해 채널을 사용한다. 채널은 고루틴 간 값을 주고받을 수 있게하여 실행을 조정하고 의도한 순서로 작업이 완료되게 한다.
+
+`<-`연산자를 통해 채널간 데이터 전달이 가능하다. 또한 채널로 들어오는 데이터를 수신할 때(`<-c`) 메시지를 받는 동시에 메인 함수에서는 데이터를 수신하기 전까지 동작을 멈춘다(blocking operation)
+
+```go showLineNumbers
+
+ch := make(chan int)
+
+go func() {
+    ch <- 123 // 보내기
+}()
+
+value := <-ch // 받기
+fmt.Println(value)
+
+```
+
+#### 고루틴 종료 대기
+
+고루틴이 종료되기 전에 메인 함수가 종료되면 고루틴의 작업 결과가 손실되어 예기치 않은 동작을 일으킬 수 있기 때문에 종료를 대기하거나 처리를 해줘야 한다.
+
+1. 단순 종료 대기
+2. 다중 채널 처리
+3. 신호 기반 종료
+4. 타임아웃 제어 및 취소 기능 포함
+
+```go showLineNumbers
+
+//1. 단순 종료 대기 (sync.WaitGroup)
+var wg sync.WaitGroup
+
+wg.Add(1)
+go func() {
+    defer wg.Done()
+    fmt.Println("고루틴 작업")
+}()
+
+wg.Wait()
+
+
+//2. 다중 채널 처리, 채널 + select + done 채널
+done := make(chan bool)
+
+go func() {
+    for {
+        select {
+        case <-done:
+            fmt.Println("종료 신호 수신")
+            return
+        default:
+            fmt.Println("작업 수행 중")
+            time.Sleep(1 * time.Second)
+        }
+    }
+}()
+
+time.Sleep(3 * time.Second)
+done <- true
+
+
+//3. 신호 기반 종료, 채널 종료 시그널 사용
+done := make(chan struct{})
+
+go func() {
+    // 작업 수행
+    done <- struct{}{} // 시그널 전송
+}()
+
+<-done // 대기
+
+
+//4. 타임아웃 제어 및 취소 기능 포함, context.Context 사용
+ctx, cancel := context.WithCancel(context.Background())
+
+go func(ctx context.Context) {
+    for {
+        select {
+        case <-ctx.Done():
+            fmt.Println("고루틴 종료")
+            return
+        default:
+            fmt.Println("작업 중...")
+            time.Sleep(500 * time.Millisecond)
+        }
+    }
+}(ctx)
+
+time.Sleep(2 * time.Second)
+cancel() // 고루틴 종료 요청
+
+```
