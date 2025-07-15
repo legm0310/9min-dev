@@ -204,10 +204,10 @@ const AboutPage = () => {
               github.com/legm0310
             </Link>
             <Link
-              href={'https://9min-dev.vercel.app/posts'}
+              href={'https://9min.dev/posts'}
               className="underline underline-offset-2 hover:decoration-2 hover:text-primary"
             >
-              9min-dev.vercel.app
+              9min.dev
             </Link>
           </div>
         </div>
