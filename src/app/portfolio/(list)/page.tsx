@@ -1,6 +1,6 @@
 import ProjectList from '@/components/portfolio/ProjectList';
 
-const Portfolio = () => {
+const PortfolioList = () => {
   return (
     <section className="my-20">
       <ProjectList className="" />
@@ -8,4 +8,4 @@ const Portfolio = () => {
   );
 };
 
-export default Portfolio;
+export default PortfolioList;
