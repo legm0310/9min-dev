@@ -162,6 +162,19 @@ export const getPost = async (
   };
 };
 
+export const getTags = async (): Promise<string[]> => {
+  const paths = getPostPaths();
+  const tagSet = new Set<string>();
+
+  for (const postPath of paths) {
+    const { frontmatter } = parseContent(postPath);
+    if (Array.isArray(frontmatter.tags)) {
+      frontmatter.tags.forEach((tag) => tagSet.add(tag));
+    }
+  }
+  return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+};
+
 export const tagFiltering = () => {};
 
 // export const getPaginatedPosts = async({ page, tag, category }) => {
