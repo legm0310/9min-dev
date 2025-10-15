@@ -1,13 +1,28 @@
 import { notFound } from 'next/navigation';
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
-import { getPost, getPostPaths, getSegments, isCategory } from '@/lib/post';
+import {
+  getPostPaths,
+  getSegments,
+  getPost,
+  getCategoryPaths,
+  isCategory,
+} from '@/lib/post';
 import PostList from '../../(list)/page';
 
 export async function generateStaticParams() {
-  const slugs = getPostPaths();
-  return slugs.map((slug) => {
-    console.log(slug, '', getSegments(slug));
+  const categorySlugs = getCategoryPaths();
+  const postSlugs = getPostPaths();
+
+  const allSlugs = [...categorySlugs, ...postSlugs];
+
+  const uniqueSegments = Array.from(
+    new Map(allSlugs.map((s) => [getSegments(s), s])).values(),
+  );
+
+  return uniqueSegments.map((slug) => {
+    console.log('Slug', slug);
+    console.log('Segments', getSegments(slug));
     return { segments: getSegments(slug) };
   });
 }
