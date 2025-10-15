@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import Category from '@/components/ui/Category';
 import Tag from '@/components/ui/Tag';
-import { getCategoryLabel } from '@/lib/post';
+import Thumbnail from '@/components/common/Thumbnail';
 import { PostSummary } from '@/types/types';
 import { parseDateToString } from '@/utils/date';
-import Thumbnail from '@/components/common/Thumbnail';
 
 interface PostCardProps {
   postInfo: PostSummary;
@@ -14,8 +13,6 @@ interface PostCardProps {
  * @TODO 마우스 호버 시 게시물 정보 칸에 디스크립션
  */
 const PostCard = ({ postInfo, columns }: PostCardProps) => {
-  const label = getCategoryLabel(postInfo.category) ?? postInfo.category;
-
   const cardTitleClass = {
     1: 'text-xl md:text-2xl',
     2: 'text-lg md:text-xl',
@@ -38,7 +35,10 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
         href={`${postInfo.url}`}
         className="group py-6 flex flex-col border-b border-b-border-subtle transition-[padding,box-shadow] duration-300 hover:shadow-md hover:pl-2"
       >
-        <Category name={label} className="mb-4 text-primary md:text-lg" />
+        <Category
+          name={postInfo.categoryLabel}
+          className="mb-4 text-primary md:text-lg"
+        />
         <div className="flex flex-row gap-x-8">
           <div className="flex flex-col basis-full sm:basis-3/4">
             <h2 className={`line-clamp-2 ${cardTitleClass}`}>
@@ -88,7 +88,7 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
 
         <div className="flex flex-col flex-1 p-2">
           <Category
-            name={label}
+            name={postInfo.categoryLabel}
             className={`text-primary ${cardCategoryClass}`}
           />
           <h2 className={`my-1 line-clamp-2 ${cardTitleClass}`}>

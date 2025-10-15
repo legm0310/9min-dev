@@ -31,7 +31,7 @@ const PUBLIC_DIR = path.join(process.cwd(), 'public');
  *  - 목록을 보고 상세 페이지 클릭
  *  - 넘어온 카테고리, 슬러그를 통해 상세 게시물 검색
  */
-
+//64+48+92= 112
 //카테고리 경로인지 게시물 경로인지 확인
 export const isCategory = (segments: string[]): boolean => {
   const slug = segments.at(-1)!;
@@ -98,21 +98,23 @@ const parseContent = (postPath: string) => {
   const file = fs.readFileSync(postPath, 'utf-8');
   const { data, content } = matter(file);
   const frontmatter: PostFrontmatter = PostFrontmatterSchema.parse(data);
-
+  const categoryLabel =
+    getCategoryLabel(frontmatter.category) ?? frontmatter.category;
   const thumbnail = checkThumbnailUrl(frontmatter.thumbnail)
     ? frontmatter.thumbnail
     : '';
   frontmatter.thumbnail = thumbnail;
 
   const readingTime = readTime(content).text;
-  return { frontmatter, content, readingTime };
+  return { content, frontmatter, categoryLabel, readingTime };
 };
 
 const loadPostSummary = (postPath: string): PostSummary => {
-  const { frontmatter, readingTime } = parseContent(postPath);
+  const { frontmatter, categoryLabel, readingTime } = parseContent(postPath);
   return {
     ...parsePostInfo(postPath),
     ...frontmatter,
+    categoryLabel,
     readingTime,
   };
 };
@@ -152,11 +154,13 @@ export const getPost = async (
     ? `${CONTENTS_DIR}/${category}/${slugInput}/content.mdx`
     : `${CONTENTS_DIR}/${slugInput}/content.mdx`;
 
-  const { frontmatter, content, readingTime } = parseContent(location);
+  const { content, frontmatter, categoryLabel, readingTime } =
+    parseContent(location);
   const compiled = await complieMdx(content);
   return {
     ...parsePostInfo(location),
     ...frontmatter,
+    categoryLabel,
     content: compiled.content,
     readingTime,
   };
@@ -175,7 +179,32 @@ export const getTags = async (): Promise<string[]> => {
   return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
 };
 
-export const tagFiltering = () => {};
+export const getTagsWithCount = async (
+  category?: string,
+): Promise<{ tag: string; count: number }[]> => {
+  const posts = await getPostSummaryList(category);
+  const tagCountMap = new Map<string, number>();
+
+  posts.forEach((post) => {
+    if (Array.isArray(post.tags)) {
+      post.tags.forEach((tag) => {
+        tagCountMap.set(tag, (tagCountMap.get(tag) || 0) + 1);
+      });
+    }
+  });
+
+  return Array.from(tagCountMap.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+};
+
+export const getPostSummaryListByTag = async (
+  tag: string,
+  category?: string,
+) => {
+  const posts = await getPostSummaryList(category);
+  return posts.filter((post) => post.tags.includes(tag));
+};
 
 // export const getPaginatedPosts = async({ page, tag, category }) => {
 //   const perPage = 10

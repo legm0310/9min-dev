@@ -1,5 +1,9 @@
-import { PostSummary } from '@/types/types';
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
 import PostCard from './PostCard';
+import { PostSummary } from '@/types/types';
 
 interface PostCardListProps {
   posts: PostSummary[];
@@ -12,6 +16,16 @@ const PostCardList = ({
   columns,
   className = '',
 }: PostCardListProps) => {
+  const searchParams = useSearchParams();
+  const selectedTags = searchParams.getAll('tag');
+
+  const filteredPosts = useMemo(() => {
+    if (selectedTags.length === 0) return posts;
+    return posts.filter((post) =>
+      selectedTags.every((tag) => post.tags.includes(tag)),
+    );
+  }, [posts, selectedTags]);
+
   const gridColsMap = {
     1: 'list-grid-1col',
     2: 'list-grid-2col',
@@ -19,13 +33,13 @@ const PostCardList = ({
     4: 'list-grid-4col',
   }[columns];
 
-  const hasPost = posts.length === 0 ? false : true;
+  const hasPost = filteredPosts.length > 0;
 
   return (
     <div>
       {hasPost ? (
         <ul className={`list-none ${gridColsMap} ${className}`}>
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <li key={`${post.category}/${post.slug}`}>
               <PostCard postInfo={post} columns={columns} />
             </li>

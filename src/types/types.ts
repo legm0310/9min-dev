@@ -15,6 +15,7 @@ export interface PostSummary {
   title: string;
   date: Date;
   category: string;
+  categoryLabel: string;
   categoryPath?: string;
   tags: string[];
   readingTime: string;
