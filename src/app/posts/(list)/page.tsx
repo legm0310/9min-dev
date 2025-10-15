@@ -10,6 +10,7 @@ interface PostListProps {
 
 const PostList = async ({ params }: PostListProps) => {
   const category = params.segments ? params.segments.join('/') : undefined;
+  //TODO 게시물들 호출 위치 최적화 (props로 내리기)
   let posts = await getPostSummaryList(category);
   if (!category) {
     posts = posts.filter((post) => post.category !== 'admin');
