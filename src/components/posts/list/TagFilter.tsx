@@ -12,11 +12,10 @@ const TagFilter = ({ tags }: TagFilterProps) => {
   const searchParams = useSearchParams();
   const selectedTag = searchParams.getAll('tag');
 
-  const onClick = (tag: string) => {
+  const toggleTag = (tag: string) => {
     const params = new URLSearchParams(searchParams.toString());
     const currentTags = new Set(params.getAll('tag'));
-    console.log(params.getAll('tag'));
-    console.log(selectedTag);
+
     if (currentTags.has(tag)) {
       currentTags.delete(tag);
     } else {
@@ -31,22 +30,30 @@ const TagFilter = ({ tags }: TagFilterProps) => {
 
   return (
     <aside className="sticky top-24 text-sm">
-      <h3 className="text-lg text-center font-semibold mb-4">Tags</h3>
-      <ul className="flex flex-col gap-1">
-        {tags.map((t) => (
-          <li
-            key={t.tag}
-            className={clsx(
-              'cursor-pointer px-2 py-1 w-fit rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors',
-              selectedTag.includes(t.tag) &&
-                'font-bold underline bg-gray-200 dark:bg-gray-700',
-            )}
-            onClick={() => onClick(t.tag)}
-          >
-            #{t.tag} ({t.count})
-          </li>
-        ))}
-      </ul>
+      <h3 className="text-xl mb-4">Tags</h3>
+      <div className="border-t-[1px] pt-4">
+        <ul className="flex flex-col gap-1">
+          {tags.map((t) => (
+            <li
+              key={t.tag}
+              className={clsx(
+                'cursor-pointer px-2 py-1 w-fit text-base rounded-lg text-muted-foreground',
+                'hover:bg-muted-hover hover:text-foreground hover:shadow-md',
+                selectedTag.includes(t.tag) &&
+                  'font-medium bg-muted border border-muted shadow-md',
+              )}
+              onClick={() => toggleTag(t.tag)}
+            >
+              <span># {t.tag}</span>
+              <span className="align-text-top text-xs aria-hidden">
+                {' '}
+                ({t.count})
+              </span>
+              {selectedTag.includes(t.tag) && <span> 📌</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
     </aside>
   );
 };

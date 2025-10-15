@@ -12,7 +12,7 @@ export default async function PostListLayout({
   return (
     <div className="flex">
       {/* tag filter */}
-      <div className="hidden xl:block lg:absolute mt-[204px] ml-16">
+      <div className="hidden xl:block lg:absolute mt-[204px] ml-20">
         <TagFilter tags={tags} />
       </div>
       {/* main content */}
