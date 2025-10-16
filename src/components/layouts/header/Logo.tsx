@@ -3,7 +3,7 @@ import Link from 'next/link';
 const Logo = () => {
   return (
     <Link href="/">
-      <h2 className="">9min.Dev</h2>
+      <h2 className="font-light">gyumin world</h2>
     </Link>
   );
 };
