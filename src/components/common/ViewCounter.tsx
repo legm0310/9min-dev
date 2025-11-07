@@ -23,9 +23,9 @@ const ViewCounter = ({
     const key = `viewcount:${viewCountType}`;
 
     if (viewCountType == 'blog-visitors') {
-      redis.get<number>(key).then((res) => setViews(res));
+      redis.get<number>(key).then((res) => setViews(res ?? 1));
     } else {
-      redis.zscore(key, slug).then((res) => setViews(res));
+      redis.zscore(key, slug).then((res) => setViews(res ?? 1));
     }
   }, []);
 
