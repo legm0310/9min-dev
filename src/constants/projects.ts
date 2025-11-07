@@ -118,7 +118,7 @@ export const projects: Project[] = [
     subTitle: '일정 관리 및 공유 서비스',
     url: '',
     role: '백엔드',
-    subInfo: ['2024. 03 - 진행중', '3인 팀 프로젝트', 'FE 3, BE 1'],
+    subInfo: ['2024. 03 - 2024. 06', '3인 팀 프로젝트', 'FE 3, BE 1'],
     description:
       '캘린더에 일정을 생성 및 공유하며 소통할 수 있는 SNS 서비스입니다',
     contrib: [
