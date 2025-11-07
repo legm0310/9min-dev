@@ -1,9 +1,11 @@
+import ViewCounter from '@/components/common/ViewCounter';
 import Category from '@/components/ui/Category';
 import Tag from '@/components/ui/Tag';
 import { categoryMap, getCategoryLabel } from '@/lib/post';
 import { parseDateToString } from '@/utils/date';
 
 interface PostIntroProps {
+  slug: string;
   title: string;
   date: Date;
   category: string;
@@ -12,6 +14,7 @@ interface PostIntroProps {
 }
 
 const PostIntro = ({
+  slug,
   title,
   date,
   category,
@@ -31,7 +34,12 @@ const PostIntro = ({
         <div className="text-sm text-muted-foreground">
           {parseDateToString(date)}
         </div>
-        <div className="text-sm text-muted-foreground">{readingTime}</div>
+        <div className="flex">
+          <ViewCounter slug={slug} viewCountType={'post'} isIcon={false} />
+          <div className="text-sm text-muted-foreground">
+            &nbsp;&middot;&nbsp;{`${readingTime}`}
+          </div>
+        </div>
       </div>
       <div className="mt-4 flex gap-3">
         {tags?.map((tag) => <Tag key={tag} name={tag} />)}

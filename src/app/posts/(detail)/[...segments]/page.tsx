@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
+import ViewAccumulator from '@/components/common/ViewAccumulator';
 import {
   getPostPaths,
   getSegments,
@@ -21,8 +22,8 @@ export async function generateStaticParams() {
   );
 
   return uniqueSegments.map((slug) => {
-    console.log('Slug', slug);
-    console.log('Segments', getSegments(slug));
+    // console.log('Slug', slug);
+    // console.log('Segments', getSegments(slug));
     return { segments: getSegments(slug) };
   });
 }
@@ -42,7 +43,9 @@ const PostDetail = async ({ params }: PostDetailProps) => {
     const post = await getPost(postPath);
     return (
       <>
+        <ViewAccumulator slug={slug} viewCountType={'post'} />
         <PostIntro
+          slug={slug}
           title={post.title}
           date={post.date}
           category={post.category}

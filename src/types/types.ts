@@ -2,6 +2,8 @@ import { ReactElement } from 'react';
 import { PostFrontmatterSchema } from '@/lib/schema';
 import { z } from 'zod';
 
+export type ViewCountType = 'blog-visitors' | 'post' | 'project' | 'about';
+
 export interface Heading {
   id: string;
   text: string;
