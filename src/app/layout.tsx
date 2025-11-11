@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import '@/styles/globals.css';
 import Header from '@/components/layouts/header/Header';
 import Footer from '@/components/layouts/Footer';
 import ThemeProvider from '@/components/layouts/header/theme-toggle/Provider';
 import Toaster from '@/components/ui/Toaster';
 import QueryParamListener from '@/components/common/QueryParamListener';
-import ViewAccumulator from '@/components/common/ViewAccumulator';
+// import ViewAccumulator from '@/components/common/ViewAccumulator';
 
-const viewCountType = 'blog-visitors';
+// const viewCountType = 'blog-visitors';
 
 export const metadata: Metadata = {
   icons: {
@@ -26,13 +27,14 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ThemeProvider>
-          <ViewAccumulator viewCountType={viewCountType} />
+          {/* <ViewAccumulator viewCountType={viewCountType} /> */}
           <QueryParamListener />
           <Header />
           {children}
           <Footer />
           <Toaster />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
