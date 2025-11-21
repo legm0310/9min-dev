@@ -63,5 +63,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     await redisPipeline.exec();
   }
 
-  return new NextResponse(null, { status: 202 });
+  let latestView = null;
+  if (viewCountType !== 'blog-visitors' && slug) {
+    latestView = await redis.zscore(contentKey, slug);
+  }
+
+  return NextResponse.json({ latestView }, { status: 200 });
 }

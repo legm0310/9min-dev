@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
+import { Redis } from '@upstash/redis';
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
-import ViewAccumulator from '@/components/common/ViewAccumulator';
 import {
   getPostPaths,
   getSegments,
@@ -10,6 +10,8 @@ import {
   isCategory,
 } from '@/lib/post';
 import PostList from '../../(list)/page';
+
+const redis = Redis.fromEnv();
 
 export async function generateStaticParams() {
   const categorySlugs = getCategoryPaths();
@@ -41,16 +43,19 @@ const PostDetail = async ({ params }: PostDetailProps) => {
   const postPath = params.segments.join('/');
   try {
     const post = await getPost(postPath);
+    const initialViews = (await redis.zscore('viewcount:post', slug)) ?? 0;
+
     return (
       <>
-        <ViewAccumulator slug={slug} viewCountType={'post'} />
         <PostIntro
           slug={slug}
           title={post.title}
           date={post.date}
           category={post.category}
+          categoryLabel={post.categoryLabel}
           tags={post.tags}
           readingTime={post.readingTime}
+          views={initialViews}
         />
         <article className="prose-base">
           <PostContent content={post.content} />

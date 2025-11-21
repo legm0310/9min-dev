@@ -30,6 +30,16 @@ export interface Post extends PostSummary {
   content: ReactElement;
 }
 
+// export interface PostHeader {
+//   slug: string;
+//   title: string;
+//   date: Date;
+//   category: string;
+//   categoryLabel: string
+//   tags: string[];
+//   readingTime: string;
+// }
+
 export interface CategoryInfo {
   key: string;
   label: string;

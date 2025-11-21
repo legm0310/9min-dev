@@ -1,33 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Redis } from '@upstash/redis';
-import { ViewCountType } from '@/types/types';
 import ViewIcon from './icon/ViewIcon';
 
 const ViewCounter = ({
-  slug,
-  viewCountType,
+  views,
   isIcon,
 }: {
-  slug?: string;
-  viewCountType: ViewCountType;
+  views: number | null;
   isIcon?: boolean;
 }) => {
-  const [views, setViews] = useState<number | null>(null);
-  const redis = new Redis({
-    url: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL,
-    token: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN,
-  });
-  useEffect(() => {
-    const key = `viewcount:${viewCountType}`;
-
-    if (viewCountType == 'blog-visitors') {
-      redis.get<number>(key).then((res) => setViews(res ?? 1));
-    } else {
-      redis.zscore(key, slug).then((res) => setViews(res ?? 1));
-    }
-  }, []);
+  //     const key = `viewcount:${viewCountType}`;
+  //     if (viewCountType == 'blog-visitors') {
+  //       redis.get<number>(key).then((res) => setViews(res ?? 1));
+  //     } else {
+  //       redis.zscore(key, slug).then((res) => setViews(res ?? 1));
+  //     }
 
   return isIcon ? (
     <div className="flex text-sm text-muted-foreground">

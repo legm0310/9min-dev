@@ -1,4 +1,4 @@
-import ViewCounter from '@/components/common/ViewCounter';
+import PostView from './PostView';
 import Category from '@/components/ui/Category';
 import Tag from '@/components/ui/Tag';
 import { categoryMap, getCategoryLabel } from '@/lib/post';
@@ -9,8 +9,10 @@ interface PostIntroProps {
   title: string;
   date: Date;
   category: string;
+  categoryLabel: string;
   tags: string[];
   readingTime: string;
+  views: number;
 }
 
 const PostIntro = ({
@@ -18,15 +20,16 @@ const PostIntro = ({
   title,
   date,
   category,
+  categoryLabel,
   tags,
   readingTime,
+  views,
 }: PostIntroProps) => {
-  const label = getCategoryLabel(category);
   return (
     <header className="mb-10">
       <div className="mb-2 section-heading">{title}</div>
       <Category
-        name={label ?? category}
+        name={categoryLabel ?? category}
         href={`/posts/${category}`}
         className="text-primary hover:underline"
       />
@@ -35,14 +38,16 @@ const PostIntro = ({
           {parseDateToString(date)}
         </div>
         <div className="flex">
-          <ViewCounter slug={slug} viewCountType={'post'} isIcon={false} />
+          <PostView slug={slug} initialViews={views} />
           <div className="text-sm text-muted-foreground">
             &nbsp;&middot;&nbsp;{`${readingTime}`}
           </div>
         </div>
       </div>
       <div className="mt-4 flex gap-3">
-        {tags?.map((tag) => <Tag key={tag} name={tag} />)}
+        {tags?.map((tag) => (
+          <Tag key={tag} name={tag} />
+        ))}
       </div>
     </header>
   );
