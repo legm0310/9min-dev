@@ -6,7 +6,7 @@ const ViewCounter = ({
   views,
   isIcon,
 }: {
-  views: number | null;
+  views: number | undefined;
   isIcon?: boolean;
 }) => {
   //     const key = `viewcount:${viewCountType}`;

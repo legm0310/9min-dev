@@ -6,9 +6,11 @@ import ViewCounter from '@/components/common/ViewCounter';
 const PostView = ({
   slug,
   initialViews,
+  isIcon = false,
 }: {
   slug: string;
   initialViews: number;
+  isIcon?: boolean;
 }) => {
   const [views, setViews] = useState(initialViews);
   useEffect(() => {
@@ -25,11 +27,10 @@ const PostView = ({
         setViews(data.latestView);
       }
     };
-
     run();
   }, [slug]);
 
-  return <ViewCounter views={views} />;
+  return <ViewCounter views={views} isIcon={isIcon} />;
 };
 
 export default PostView;

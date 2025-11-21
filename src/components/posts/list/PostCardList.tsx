@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PostCard from './PostCard';
 import { PostSummary } from '@/types/types';
 
@@ -18,6 +18,7 @@ const PostCardList = ({
 }: PostCardListProps) => {
   const searchParams = useSearchParams();
   const selectedTags = searchParams.getAll('tag');
+  const [viewMap, setViewMap] = useState<Record<string, number>>({});
 
   const filteredPosts = useMemo(() => {
     if (selectedTags.length === 0) return posts;
@@ -25,6 +26,19 @@ const PostCardList = ({
       selectedTags.every((tag) => post.tags.includes(tag)),
     );
   }, [posts, selectedTags]);
+
+  useEffect(() => {
+    const slugs = posts.map((p) => p.slug);
+
+    async function fetchViews() {
+      const res = await fetch(
+        `/api/viewcounts?slugs=${slugs.join(',')}&viewCountType=post`,
+      );
+      const viewData = await res.json();
+      setViewMap(viewData);
+    }
+    fetchViews();
+  }, []);
 
   const gridColsMap = {
     1: 'list-grid-1col',
@@ -41,7 +55,10 @@ const PostCardList = ({
         <ul className={`list-none ${gridColsMap} ${className}`}>
           {filteredPosts.map((post) => (
             <li key={`${post.category}/${post.slug}`}>
-              <PostCard postInfo={post} columns={columns} />
+              <PostCard
+                postInfo={{ ...post, views: viewMap[post.slug] ?? post.views }}
+                columns={columns}
+              />
             </li>
           ))}
         </ul>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Category from '@/components/ui/Category';
 import Tag from '@/components/ui/Tag';
 import Thumbnail from '@/components/common/Thumbnail';
+import ViewCounter from '@/components/common/ViewCounter';
 import { PostSummary } from '@/types/types';
 import { parseDateToString } from '@/utils/date';
 
@@ -52,8 +53,9 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
               )}
             </div>
             <div className="mt-6 flex justify-between">
-              <div className="text-sm text-muted-foreground">
-                {parseDateToString(postInfo.date)}
+              <div className="flex justify-between space-x-6 text-sm text-muted-foreground">
+                <div>{parseDateToString(postInfo.date)}</div>
+                <ViewCounter views={postInfo.views} isIcon={true} />
               </div>
               <div className="text-sm text-muted-foreground">
                 {postInfo.readingTime}
@@ -102,8 +104,9 @@ const PostCard = ({ postInfo, columns }: PostCardProps) => {
             )}
           </div>
           <div className="mt-auto flex justify-between">
-            <div className="text-sm text-muted-foreground">
-              {parseDateToString(postInfo.date)}
+            <div className="flex justify-between space-x-6 text-sm text-muted-foreground">
+              <div>{parseDateToString(postInfo.date)}</div>
+              <ViewCounter views={postInfo.views} isIcon={true} />
             </div>
             <div className="text-sm text-muted-foreground">
               {postInfo.readingTime}

@@ -21,6 +21,8 @@ export interface PostSummary {
   categoryPath?: string;
   tags: string[];
   readingTime: string;
+  //page.tsx에서 쿼리할 조회수
+  views?: number;
   url: string;
   thumbnail: string;
   description: string;

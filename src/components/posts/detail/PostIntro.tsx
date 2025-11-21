@@ -1,7 +1,6 @@
 import PostView from './PostView';
 import Category from '@/components/ui/Category';
 import Tag from '@/components/ui/Tag';
-import { categoryMap, getCategoryLabel } from '@/lib/post';
 import { parseDateToString } from '@/utils/date';
 
 interface PostIntroProps {
