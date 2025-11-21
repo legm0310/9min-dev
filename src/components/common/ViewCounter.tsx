@@ -20,11 +20,13 @@ const ViewCounter = ({
     <div className="flex text-sm text-muted-foreground">
       <ViewIcon width={16} height={16} />
       &nbsp;
-      {views ? `${views.toLocaleString()}` : '-'}
+      {typeof views === 'number' ? `${views.toLocaleString()}` : '-'}
     </div>
   ) : (
     <div className="text-sm text-muted-foreground">
-      {views ? `${views.toLocaleString()} views ` : '- views '}
+      {typeof views === 'number'
+        ? `${views.toLocaleString()} views `
+        : '- views '}
     </div>
   );
 };
