@@ -1,0 +1,176 @@
+---
+title: 'KV DB 조회 도구로 geth 버그 수정 기여하기'
+date: '2026-03-17'
+category: 'blockchain'
+tags: ['geth', 'ethereum', 'pebbleDB']
+thumbnail: '/contents/posts/blockchain/geth-db-inspect-bug-fix/preview.jpg'
+description: ''
+---
+
+## 개요
+
+블록체인 노드 구현 오픈소스 **geth(go-ethereum)**&#8203;를 통해 raw DB 데이터를 조회해보기 위해 CLI로 `db metadata`, `db inspect` 등의 명령어를 사용하던 중 `db inspect` 명령어 사용 시 비정상적으로 조회되는 현상을 발견했다.
+
+평소 참고하던 오픈 소스에서 버그를 발견하고 수정하는 것은 나에게 신선한 경험이었기에, 이러한 경험들을 정리하였다.
+
+geth 명령어 중 `db inspect` 명령어는 노드의 raw DB의 데이터 유형별 저장 용량 및 Items 수를 조회할 수 있다. 이 부분에서 Items 수가 실제 데이터보다 많은 수로 카운팅되었다.
+
+![다른 값(90001)과 다르게 더 많은 수로 카운팅되는 데이터](/contents/posts/blockchain/geth-db-inspect-bug-fix/db-inspect-find-bug.png)
+
+## Geth raw DB 구조 이해
+
+문제를 알아보기 전 geth 내부에서 사용하는 raw DB 구조를 파악하는 것이 필요하다.
+이전에 geth는 내부 raw DB를 디폴트로 *LevelDB*를 사용했지만, 지금은 새 노드 가동 시 *PebbleDB*를 기본으로 사용하도록 변경되었다.
+
+*LevelDB*와 *PebbleDB*는 모두 **key-value** 형식의 데이터베이스이다. 그렇기 때문에 데이터 조회 시 key를 통해 데이터를 조회할 수 있다.
+raw DB에 데이터를 저장할 때는 **데이터 유형별로 prefix를 key 앞에 추가**하여 각각의 형식으로 저장한다.
+
+### Geth 저장소 영역
+
+geth 저장소는 크게 두 계층으로 나뉜다.
+
+- Hot store (KV DB): chaindata/ (_PebbleDB_ 또는 _LevelDB_)
+- Cold store (Ancient/Freezer): append-only 테이블, 오래된 블록 데이터 저장
+
+`chaindata`에는 header/body/receipts(최근 구간), transaction lookup, state trie, contract code, snapshot, metadata가 key-value 형태로 저장된다.
+오래된 블록 구간은 `freezer(ancient)`로 이동한다. 기본적으로 90000개까지 Hot store에 저장되고 이를 초과하면 freezer로 이동한다.
+
+```txt showLineNumbers title="저장소 영역"
+  datadir/geth/
+    └── chaindata/             ← Hot KV (PebbleDB/LevelDB)
+      └── ancient/             ← Freezer (default: inside chaindata)
+
+# --datadir.ancient 사용 시 ancient 경로 분리 가능
+```
+
+### Geth raw DB key layout
+
+Key-Value DB에서 Key로 사용되는 레이아웃은 다음과 같다
+
+| prefix | key 구조                                | 설명                                  |
+| ------ | --------------------------------------- | ------------------------------------- |
+| h      | h + blockNum(8B) + blockHash(32B)       | Block Header                          |
+| b      | b + blockNum(8B) + blockHash(32B)       | Block Body                            |
+| r      | r + blockNum(8B) + blockHash(32B)       | Receipts                              |
+| h      | h + blockNum(8B) + blockHash(32B) + t   | Total difficulty                      |
+| h      | h + blockNum(8B) + n                    | Canonical Hash (num -> hash)          |
+| H      | H + blockHash(32B)                      | Block Hash -> Number                  |
+| l      | l + txHash(32B)                         | Transaction Lookup                    |
+| c      | c + codeHash(32B)                       | Contract Code                         |
+| a      | a + accountHash(32B)                    | Snapshot Account                      |
+| o      | o + accountHash(32B) + storageHash(32B) | Snapshot Storage                      |
+|        | nodeRLPHash(32B)                        | Trie Node (hash scheme)               |
+| A      | A + hexPath                             | Account Trie Node (path scheme)       |
+| O      | O + accountHash(32B) + hexPath          | Storage Trie Node (path scheme)       |
+| L      | L + stateRoot(32B)                      | State lookup (state root -> state id) |
+|        | LastBlock/LastHeader/LastFast           | Head Pointers                         |
+
+## DB Inspect 오탐 현상 발견
+
+다른 노드의 블록 데이터를 geth에 마이그레이션하던 중, 앞서 언급한 것과 같이 geth `db inspect` 명령어에서 실제 데이터보다 더 많은 개수가 카운팅되었다.
+
+`db inspect` 명령어는 데이터 유형별로 저장 용량 및 Items 수를 조회할 수 있다.
+
+![db inspect 명령어 출력](/contents/posts/blockchain/geth-db-inspect-bug-fix/geth-db-inspect.png)
+
+위의 출력 예시에서도 다른 값들은 모두 1,500,001개로 출력되는데 `Block number -> hash` 카테고리의 `Items` 수가 **109개 더 많이 카운팅**된 것을 볼 수 있다.
+
+처음에는 블록 마이그레이션 과정에서 블록 **파싱** 또는 **삽입**, **헤드 포인트 갱신**, 가져온 **블록 재실행** 등의 과정에서 문제가 생긴 것으로 추측하고 그 부분을 디버깅했다. 하지만 마이그레이션 과정은 정상적이었고, RPC 블록 번호 조회도 정상 작동하였다.
+**해당 문제 재현은 `db inspect`에서만 나타나고 다른 부분에서 같은 문제를 찾을 수 없었다.**
+
+추가적으로 초기에는 `Block number -> hash`에서 109개 오차를 먼저 확인했지만, 이후 전체 키 분류를 검증하면서 `Total difficulty`까지 포함된 오탐이 있음을 확인했다.
+
+## Geth DB 조회 도구 구현
+
+위와 같이 기존 도구/RPC로 조회하는 방식에서 예상과 다른 동작을 해서 **raw DB를 직접 조회하는 도구**를 구현하기로 했다.
+어차피 Hot store인 Key-Value DB는 Key 형식만 맞춰주면 조회할 수 있으니 도구를 만들어 직접 DB를 탐색하는 방법이 더 명확하고 빠르다고 생각했다.
+
+구현한 도구는 CLI 환경에서 명령어와 옵션을 통해서 DB를 조회할 수도 있고, `browse` 명령어를 통해 TUI로 DB를 탐색할 수도 있다.
+
+{/* prettier-ignore */}
+<Callout type="info">
+  raw DB 조회 도구는 [github](https://github.com/legm0310/geth-db-explorer)에서 확인할 수 있다.
+</Callout>
+
+![Geth DB 조회 도구 TUI 화면](/contents/posts/blockchain/geth-db-inspect-bug-fix/geth-db-explorer.png)
+
+TUI 화면에서는 Blocks, Transactions, Accounts, Trie nodes 등의 데이터 조회 기능과, `db inspect` 명령어와 동일한 동작을 하는 기능이 있다.
+
+![Geth DB 조회 도구 db inspect 기능](/contents/posts/blockchain/geth-db-inspect-bug-fix/geth-db-explorer-inspect.png)
+
+{/* prettier-ignore */}
+<Callout type="info">
+  위의 이미지를 통해, 구현한 도구로 조회했을 때 값이 정상적으로 출력되는 것을 확인할 수 있다. 
+  (기존 **1,500,110** -> **1,500,001**)
+</Callout>
+
+## 버그 수정 기여
+
+geth의 CLI 명령어가 아닌 raw DB(_PebbleDB_)를 직접 조회하여 정상 출력을 확인한 이후, **해당 이슈는 geth 코드베이스의 문제**일 수 있다고 생각했다.
+
+노드 구현에서 `db inspect`의 분류 로직을 추적해보니 조회 조건이 느슨하게 적용되어 다른 카테고리 데이터로 카운팅될 여지가 있었다.
+
+```go showLineNumbers title="core/rawdb/database.go"
+// func InspectDatabase
+...
+case bytes.HasPrefix(key, headerPrefix) && len(key) == (len(headerPrefix)+8+common.HashLength):
+	headers.add(size)
+case bytes.HasPrefix(key, blockBodyPrefix) && len(key) == (len(blockBodyPrefix)+8+common.HashLength):
+	bodies.add(size)
+case bytes.HasPrefix(key, blockReceiptsPrefix) && len(key) == (len(blockReceiptsPrefix)+8+common.HashLength):
+	receipts.add(size)
+// Total difficulty
+case bytes.HasPrefix(key, headerPrefix) && bytes.HasSuffix(key, headerTDSuffix):
+	tds.add(size)
+// Number -> Hash
+case bytes.HasPrefix(key, headerPrefix) && bytes.HasSuffix(key, headerHashSuffix):
+	numHashPairings.add(size)
+case bytes.HasPrefix(key, headerNumberPrefix) && len(key) == (len(headerNumberPrefix)+common.HashLength):
+	hashNumPairings.add(size)
+case IsLegacyTrieNode(key, it.Value()):
+	legacyTries.add(size)
+case bytes.HasPrefix(key, stateIDPrefix) && len(key) == len(stateIDPrefix)+common.HashLength:
+
+...
+
+
+```
+
+`Total difficulty`, `Number -> Hash` 매핑 데이터 조건을 보면 prefix와 suffix만 체크하고 길이는 체크하고 있지 않다.
+길이 확인이 없는 느슨한 조건 때문에 legacy trie node 키 일부가 먼저 매칭되어, 의도와 다른 카테고리로 분류되며 카운트가 왜곡되었다. (legacy trie node의 키는 `hash(trie-nodeRLP)`)
+
+- Block number -> hash 조회 시 `h + 8B + n`을 조회해야 하나,
+  `HasPrefix("h") && HasSuffix("n")` 조회
+- 키 분류 조건이 겹치면서 Block number -> hash와 Hash trie nodes 카운트가 서로 어긋나는 오탐
+
+해당 문제를 해결하기 위해 기존 조건에 길이 조건을 추가하여 수정했다.
+
+```go showLineNumbers title="core/rawdb/database.go"
+case bytes.HasPrefix(key, headerPrefix) && bytes.HasSuffix(key, headerTDSuffix) && len(key) == len(headerPrefix) + 8 + common.HashLength + len(headerTDSuffix):
+	tds.add(size)
+case bytes.HasPrefix(key, headerPrefix) && bytes.HasSuffix(key, headerHashSuffix) && len(key) == len(headerPrefix) + 8 + len(headerHashSuffix):
+	numHashPairings.add(size)
+```
+
+{/* prettier-ignore */}
+<Callout type="info">
+  수정한 내용은 [PR](https://github.com/ethereum/go-ethereum/pull/34000) 작성 후 머지되었다.
+</Callout>
+
+수정 이후 **Total difficulty, Number -> Hash** 카테고리에 잘못 카운팅된 값이 정상적으로 출력되는 것을 확인할 수 있었다.
+
+![수정 후 db inspect 명령어 출력](/contents/posts/blockchain/geth-db-inspect-bug-fix/geth-db-inspect-fixed.png)
+
+- 기존 데이터
+  - Total difficulty: 139
+  - Number -> Hash: 1,500,110
+  - Hash trie nodes: 8,343,047
+- 수정 후 데이터
+  - Total difficulty: 0
+  - Number -> Hash: 1,500,001
+  - Hash trie nodes: 8,343,295
+
+Hash trie nodes 누락 개수: 8,343,295 - 8,343,047 = 248
+Total difficulty, Number -> Hash 오탐 개수 = (1,500,110 - 1,500,001) + 139 = 248
+
+> Hash trie nodes에 조회되어야 할 데이터가 Total difficulty, Number -> Hash 카테고리로 잘못 분류되어 누락
