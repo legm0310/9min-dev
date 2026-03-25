@@ -2,11 +2,11 @@ import { notFound } from 'next/navigation';
 import { projects } from '@/constants/projects';
 
 interface ProjectDetailProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-const ProjectDetail = ({ params }: ProjectDetailProps) => {
-  const { slug } = params;
+const ProjectDetail = async ({ params }: ProjectDetailProps) => {
+  const { slug } = await params;
 
   const project = projects.find((p) => p.slug === slug);
 

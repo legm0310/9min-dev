@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
-import { Redis } from '@upstash/redis';
 import PostContent from '@/components/posts/detail/PostContent';
 import PostIntro from '@/components/posts/detail/PostIntro';
+import PostListContent from '@/components/posts/list/PostListContent';
 import {
   getPostPaths,
   getSegments,
@@ -9,9 +9,6 @@ import {
   getCategoryPaths,
   isCategory,
 } from '@/lib/post';
-import PostList from '../../(list)/page';
-
-const redis = Redis.fromEnv();
 
 export async function generateStaticParams() {
   const categorySlugs = getCategoryPaths();
@@ -31,19 +28,14 @@ export async function generateStaticParams() {
 }
 
 interface PostDetailProps {
-  params: {
-    segments: string[];
-  };
+  segments: string[];
 }
 
-const PostDetail = async ({ params }: PostDetailProps) => {
-  const categoryPath = params.segments.slice(0, -2);
-  const category = params.segments.at(-2)!;
-  const slug = params.segments.at(-1)!;
-  const postPath = params.segments.join('/');
+const PostDetail = async ({ segments }: PostDetailProps) => {
+  const slug = segments.at(-1)!;
+  const postPath = segments.join('/');
   try {
     const post = await getPost(postPath);
-    const initialViews = (await redis.zscore('viewcount:post', slug)) ?? 0;
 
     return (
       <>
@@ -55,7 +47,7 @@ const PostDetail = async ({ params }: PostDetailProps) => {
           categoryLabel={post.categoryLabel}
           tags={post.tags}
           readingTime={post.readingTime}
-          views={initialViews}
+          views={0}
         />
         <article className="prose-base">
           <PostContent content={post.content} />
@@ -69,18 +61,20 @@ const PostDetail = async ({ params }: PostDetailProps) => {
 };
 
 interface PostRouterProps {
-  params: {
+  params: Promise<{
     segments: string[];
-  };
+  }>;
 }
 
 const PostRouter = async ({ params }: PostRouterProps) => {
-  const segments = Array.isArray(params.segments) ? params.segments : [];
-  const isListPage = segments.length === 0 || isCategory(segments);
+  const { segments } = await params;
+  const normalizedSegments = Array.isArray(segments) ? segments : [];
+  const isListPage =
+    normalizedSegments.length === 0 || isCategory(normalizedSegments);
   return isListPage ? (
-    <PostList params={params} />
+    <PostListContent segments={normalizedSegments} />
   ) : (
-    <PostDetail params={params} />
+    <PostDetail segments={normalizedSegments} />
   );
 };
 

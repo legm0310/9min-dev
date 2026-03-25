@@ -4,6 +4,15 @@ import { ViewCountType } from '@/types/types';
 
 const redis = Redis.fromEnv();
 
+const getClientIp = (req: NextRequest): string | null => {
+  const forwardedFor = req.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0]?.trim() ?? null;
+  }
+
+  return req.headers.get('x-real-ip');
+};
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const body = await req.json();
   const slug = body.slug as string | undefined;
@@ -15,7 +24,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   let isNewBlogVisit;
   let isNewView;
 
-  const ip = req.ip ?? req.headers.get('X-Forwarded-For');
+  const ip = getClientIp(req);
   if (ip) {
     const buf = await crypto.subtle.digest(
       'SHA-256',

@@ -3,15 +3,17 @@ import PageCotainer from '@/components/layouts/PageContainer';
 import TableOfContents from '@/components/posts/detail/TableOfContents';
 import { isCategory } from '@/lib/post';
 
-export default function PostSegmentLayout({
+export default async function PostSegmentLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { segments: string[] };
+  params: Promise<{ segments: string[] }>;
 }) {
-  const segments = Array.isArray(params.segments) ? params.segments : [];
-  const isListPage = segments.length === 0 || isCategory(segments);
+  const { segments } = await params;
+  const normalizedSegments = Array.isArray(segments) ? segments : [];
+  const isListPage =
+    normalizedSegments.length === 0 || isCategory(normalizedSegments);
   return (
     //카테고리 여부에 따른 레이아웃 렌더링
     isListPage ? (

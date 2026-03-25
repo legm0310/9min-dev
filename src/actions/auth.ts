@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { PHONE_WHITELIST } from '@/constants/constants';
 
 export const unlockByPhoneNumber = async (phoneNumber: string) => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const existing = cookieStore.get('accessToken')?.value;
 
   if (existing) {
@@ -23,7 +23,7 @@ export const unlockByPhoneNumber = async (phoneNumber: string) => {
     .setExpirationTime('5h')
     .sign(new TextEncoder().encode(secretKey!));
 
-  cookies().set('accessToken', token, {
+  cookieStore.set('accessToken', token, {
     httpOnly: true,
     path: '/',
     maxAge: 60 * 60,

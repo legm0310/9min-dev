@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
 import ToastButton from '../ui/ToastButton';
@@ -9,7 +10,7 @@ import VideoIcon from '../common/icon/VideoIcon';
 import { projects } from '@/constants/projects';
 
 const ProjectSummary = () => {
-  const iconMap: { [key: string]: (className?: string) => JSX.Element } = {
+  const iconMap: Record<string, (className?: string) => ReactElement> = {
     github: (className = '') => (
       <GithubIcon className={className} width={16} height={16} />
     ),

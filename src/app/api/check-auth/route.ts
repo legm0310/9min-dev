@@ -3,7 +3,8 @@ import { jwtVerify } from 'jose';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const token = cookies().get('accessToken')?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('accessToken')?.value;
   if (!token) return NextResponse.json({ valid: false });
 
   try {
